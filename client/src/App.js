@@ -1,10 +1,41 @@
-import HomePage from './pages/HomePage';
+import HomePage from "./pages/HomePage";
+import VolunteerPage from "./pages/VolunteerPage";
+import Navbar from "./components/Navbar";
+import Loader from "./components/Loader";
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
+  const [loading, setLoading] = useState(false); // State to manage loading overlay
   return (
-    <>
-    <HomePage/>
-    </>
+    <BrowserRouter>
+      {loading && <Loader />} {/* Show loading overlay */}
+      <Routes>
+        {/* Home Page without Navbar */}
+
+        <Route path="/" element={<HomePage setLoading={setLoading} />} />
+        <Route path="/volunteer" element={<VolunteerPage />} />
+
+        {/* All Other Pages with Navbar */}
+        <Route
+          path="/*"
+          element={
+            <div className="App bg-white">
+              {!loading && <Navbar />} {/* Hide Navbar while loading */}
+              <Routes>
+                <Route
+                  path="/sampleRoute"
+                  element={
+                    <HomePage setLoading={setLoading} loading={loading} />
+                  }
+                />
+              </Routes>
+            </div>
+          }
+        />
+        
+      </Routes>
+    </BrowserRouter>
   );
 }
 

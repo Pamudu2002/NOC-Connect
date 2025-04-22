@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUp, Menu, X, Phone, Mail, MapPin, FacebookIcon, TwitterIcon, InstagramIcon, ChevronDown, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -193,13 +194,15 @@ function HomePage() {
             >
               Contact
             </motion.button>
-            <motion.button 
+            <Link to="/volunteer">
+            <motion.div 
               className="px-4 py-2 rounded-full bg-sky-600 hover:bg-sky-500 transition-colors"
               whileHover={{ scale: 1.05, backgroundColor: '#0284c7' }}
               whileTap={{ scale: 0.95 }}
             >
               Volunteer
-            </motion.button>
+            </motion.div>
+            </Link>
             <motion.button 
               className="px-4 py-2 rounded-full border border-white hover:bg-white hover:text-sky-900 transition-colors"
               whileHover={{ scale: 1.05, backgroundColor: '#ffffff', color: '#0c4a6e' }}
@@ -279,13 +282,15 @@ function HomePage() {
                     Contact
                   </motion.button>
                   <motion.div className="pt-4">
-                    <motion.button 
-                      className="w-full py-3 px-4 rounded-full bg-sky-600 hover:bg-sky-500 transition-colors font-medium"
+                    <Link to="/volunteer">
+                    <motion.div
+                      className="w-full py-3 px-4 rounded-full bg-sky-600 hover:bg-sky-500 transition-colors font-medium text-center"
                       whileHover={{ backgroundColor: '#0284c7' }}
                       whileTap={{ scale: 0.95 }}
                     >
                       Volunteer
-                    </motion.button>
+                    </motion.div>
+                    </Link>
                   </motion.div>
                   <motion.div className="pt-2">
                     <motion.button 

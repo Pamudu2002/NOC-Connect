@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const eventRoute = require('./routes/event.route');
+const athleteRoute = require('./routes/athlete.route');
+const userRoute = require('./routes/user.route')
 
 
 dotenv.config();
@@ -24,6 +26,9 @@ app.use(cors({
 }));
 
 app.use('/api/events', eventRoute);
+app.use('/api/athletes', athleteRoute);
+app.use('/api/users', userRoute);
+
 
 app.get('/', (req, res) => {
   res.send('Server is running...');

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, MapPin, X, ArrowRight, User, Mail, Phone, Home, Award } from 'lucide-react';
+import { api } from '../api/api'; 
+import Swal from 'sweetalert2';
 
 function VolunteerCard({event}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVolunteerModalOpen, setIsVolunteerModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
-    birthdate: '',
+    birthDate: '',
     email: '',
-    phone: '',
+    phoneNumber: '',
     address: '',
     experience: ''
   });
@@ -35,9 +37,9 @@ function VolunteerCard({event}) {
   // Check if all required fields are filled
   const isFormValid = () => {
     return formData.fullName && 
-           formData.birthdate && 
+           formData.birthDate && 
            formData.email && 
-           formData.phone && 
+           formData.phoneNumber && 
            formData.address;
   };
 
@@ -46,14 +48,42 @@ function VolunteerCard({event}) {
     e.preventDefault();
     
     if (isFormValid()) {
-      alert(`Thank you for volunteering, ${formData.fullName}! We will contact you soon with more details.`);
+    
+      api.post('/volunteers/register', {
+        ...formData,
+        eventName: event.name
+      })
+      .then(response => {
+        Swal.fire({
+          title: 'Success!',
+          text: `Thank you for volunteering, ${formData.fullName}! We will contact you soon with more details.`,
+          icon: 'success',
+          background: '#0c4a6e', // Sky-900 dark background matching your theme
+          color: '#bae6fd', // Sky-200 text color for readability
+          confirmButtonColor: '#0ea5e9', // Sky-500 for the button to match your other buttons
+          iconColor: '#38bdf8' // Sky-400 for the success icon
+        })
+      })
+      .catch(error => {
+        Swal.fire({
+          title: 'Error!',
+          text: `${error.response?.data?.message || 'Failed to register. Please try again later.'}`,
+          icon: 'error',
+          background: '#0c4a6e',
+          color: '#f8fafb',
+          confirmButtonColor: '#0ea5e9'
+        });
+      })
+    
+      // Close the volunteer modal
+
       setIsVolunteerModalOpen(false);
       // Reset form data
       setFormData({
         fullName: '',
-        birthdate: '',
+        birthDate: '',
         email: '',
-        phone: '',
+        phoneNumber: '',
         address: '',
         experience: ''
       });
@@ -250,7 +280,7 @@ function VolunteerCard({event}) {
                 
                 {/* Birthdate Field */}
                 <div className="mb-4">
-                  <label htmlFor="birthdate" className="block text-sky-200 mb-1 font-medium">
+                  <label htmlFor="birthDate" className="block text-sky-200 mb-1 font-medium">
                     <span className="flex items-center">
                       <Calendar size={16} className="mr-2" />
                       Birthdate <span className="text-red-400 ml-1">*</span>
@@ -258,9 +288,9 @@ function VolunteerCard({event}) {
                   </label>
                   <input
                     type="date"
-                    id="birthdate"
-                    name="birthdate"
-                    value={formData.birthdate}
+                    id="birthDate"
+                    name="birthDate"
+                    value={formData.birthDate}
                     onChange={handleInputChange}
                     className="w-full bg-sky-900 border border-sky-700 rounded p-2 text-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
                     required
@@ -288,7 +318,7 @@ function VolunteerCard({event}) {
                 
                 {/* Phone Number Field */}
                 <div className="mb-4">
-                  <label htmlFor="phone" className="block text-sky-200 mb-1 font-medium">
+                  <label htmlFor="phoneNumber" className="block text-sky-200 mb-1 font-medium">
                     <span className="flex items-center">
                       <Phone size={16} className="mr-2" />
                       Phone Number <span className="text-red-400 ml-1">*</span>
@@ -296,9 +326,9 @@ function VolunteerCard({event}) {
                   </label>
                   <input
                     type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
                     onChange={handleInputChange}
                     className="w-full bg-sky-900 border border-sky-700 rounded p-2 text-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
                     required

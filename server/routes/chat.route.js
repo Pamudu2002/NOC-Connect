@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { SYSTEM_INSTRUCTION, ABOUT_APP } = require('./chatConfig');
+const eventModel = require('../models/event.model');
 
 const ABOUT_PLAYERS = JSON.stringify({ "name": "Jason", "age": "25" });
+let ABOUT_EVENTS;
 
 // Set up model
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -15,16 +17,19 @@ let chatID = 0;
 // Store chat history for each chat
 const historyStore = {};
 
-async function initChatGemini() {
+async function initChatGemini(pageName) {
   if (chatID == CHAT_HISTORY_LIMIT) {
     chatID = 0;
   }
+  ABOUT_EVENTS  = await eventModel.find();
   historyStore[chatID] = [
     {
       role: "user",
       parts: [{
         text:`About the web-app: ${ABOUT_APP}
-      About the players: ${ABOUT_PLAYERS}`}],
+      About the players: ${ABOUT_PLAYERS}
+      About the Events: ${ABOUT_EVENTS}
+      Current page of the user: ${pageName}`}],
     },
     {
       role: "model",
@@ -48,13 +53,20 @@ async function chatWithGemini(chatID, userMessage) {
 
 async function initChat(req, res) {
   try {
-    const chatID = await initChatGemini();
-    res.json({ "chatID": chatID });
+    const { pageName } = req.body;
+
+    if (!pageName) {
+      return res.status(400).json({ error: "pageName is required" });
+    }
+
+    const chatID = await initChatGemini(pageName);
+    res.json({ chatID });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Something went wrong" });
   }
 }
+
 async function chat(req, res) {
   const { chatID, message } = req.body;
 
@@ -75,7 +87,7 @@ async function chat(req, res) {
   }
 }
 
-router.get('/init', initChat);
+router.post('/init', initChat);
 router.post('/', chat);
 
 module.exports = router;

@@ -23,7 +23,36 @@ const ChatConfig = {
     Volunteers do not require a user account. When an event is published by NOC officials requesting volunteer support, interested individuals can register directly for the event through the platform.
     
     General Public:
-    They Can see the landing page(with news and updates of NOC) and profiles of players
+    They Can see the home page(with news and updates of NOC) and profiles of players
+
+    Pages:
+    Home page -
+    The Home page of the NOC Connect web application serves as the central hub for users. It includes essential navigation links and user action points.
+
+    Main Sections:
+    Home : Returns the user to the landing screen.
+    About Us : Explains the purpose and goals of the NOC Connect platform.
+    Leadership : Displays current leadership within the National Olympic Committee.
+    FAQ : Provides answers to common questions regarding roles and platform usage.
+    Contact : Allows users to reach out to the NOC or platform administrators.
+    User Actions:
+    Volunteer : Enables volunteers to register for events without creating an account.
+    Sign Up : Lets new players and sponsors register for an account.
+    Get Started : A general call-to-action guiding users toward sign-up or login processes.
+    Sign In : For returning users to access their accounts (players, sponsors, and admins).
+
+    Note: This page is publicly accessible. It does not require users to log in or sign up to view or interact with its content.
+    
+    Volunteer page - 
+    The Volunteer page displays a list of all upcoming events that are currently seeking volunteer support.
+    
+    Page Features:
+    View all events published by NOC Officials that request volunteer assistance. Each event includes details such as date, location, and purpose.
+    User Actions:
+    Volunteer to register interest in any available event (no account required).
+    Back to Home takes the user back to the Home page.
+
+    Note: This page is publicly accessible. No login or signup is required to view events or register as a volunteer.
     `
   };
   

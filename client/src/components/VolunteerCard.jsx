@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, X, ArrowRight, User } from 'lucide-react';
+import { Calendar, Clock, MapPin, X, ArrowRight, User, Mail, Phone, Home, Award } from 'lucide-react';
 
 function VolunteerCard({event}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isVolunteerModalOpen, setIsVolunteerModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    birthdate: '',
+    email: '',
+    phone: '',
+    address: '',
+    experience: ''
+  });
 
   // Format date to display in a readable format
   const formatDate = (dateString) => {
@@ -12,6 +21,43 @@ function VolunteerCard({event}) {
       day: 'numeric',
       year: 'numeric'
     });
+  };
+
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  // Check if all required fields are filled
+  const isFormValid = () => {
+    return formData.fullName && 
+           formData.birthdate && 
+           formData.email && 
+           formData.phone && 
+           formData.address;
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    if (isFormValid()) {
+      alert(`Thank you for volunteering, ${formData.fullName}! We will contact you soon with more details.`);
+      setIsVolunteerModalOpen(false);
+      // Reset form data
+      setFormData({
+        fullName: '',
+        birthdate: '',
+        email: '',
+        phone: '',
+        address: '',
+        experience: ''
+      });
+    }
   };
 
   return (
@@ -66,6 +112,7 @@ function VolunteerCard({event}) {
               <span>View</span>
             </button>
             <button 
+              onClick={() => setIsVolunteerModalOpen(true)}
               className="w-1/2 bg-sky-600 hover:bg-sky-500 text-white py-2 px-4 rounded-md transition-colors duration-300 flex items-center justify-center"
             >
               <span>Volunteer</span>
@@ -74,7 +121,7 @@ function VolunteerCard({event}) {
         </div>
       </div>
 
-      {/* Modal Component */}
+      {/* Event Details Modal Component */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
           <div className="bg-sky-950 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
@@ -148,12 +195,176 @@ function VolunteerCard({event}) {
                   Close
                 </button>
                 <button 
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setIsVolunteerModalOpen(true);
+                  }}
                   className="w-1/2 bg-sky-500 hover:bg-sky-400 text-white py-2 px-4 rounded-md transition-colors duration-300 flex items-center justify-center"
                 >
                   <span>Volunteer Now</span>
-                  
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Volunteer Form Modal */}
+      {isVolunteerModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+          <div className="bg-sky-950 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="relative bg-sky-800 p-4">
+              <h2 className="text-sky-100 font-bold text-xl">Volunteer Registration</h2>
+              <h3 className="text-sky-200 text-sm">{event.name}</h3>
+              {/* Close Button */}
+              <button 
+                onClick={() => setIsVolunteerModalOpen(false)}
+                className="absolute top-4 right-4 text-sky-300 hover:text-white"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            {/* Form Content */}
+            <div className="p-6">
+              <form onSubmit={handleSubmit}>
+                {/* Full Name Field */}
+                <div className="mb-4">
+                  <label htmlFor="fullName" className="block text-sky-200 mb-1 font-medium">
+                    <span className="flex items-center">
+                      <User size={16} className="mr-2" />
+                      Full Name <span className="text-red-400 ml-1">*</span>
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    className="w-full bg-sky-900 border border-sky-700 rounded p-2 text-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    required
+                  />
+                </div>
+                
+                {/* Birthdate Field */}
+                <div className="mb-4">
+                  <label htmlFor="birthdate" className="block text-sky-200 mb-1 font-medium">
+                    <span className="flex items-center">
+                      <Calendar size={16} className="mr-2" />
+                      Birthdate <span className="text-red-400 ml-1">*</span>
+                    </span>
+                  </label>
+                  <input
+                    type="date"
+                    id="birthdate"
+                    name="birthdate"
+                    value={formData.birthdate}
+                    onChange={handleInputChange}
+                    className="w-full bg-sky-900 border border-sky-700 rounded p-2 text-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    required
+                  />
+                </div>
+                
+                {/* Email Field */}
+                <div className="mb-4">
+                  <label htmlFor="email" className="block text-sky-200 mb-1 font-medium">
+                    <span className="flex items-center">
+                      <Mail size={16} className="mr-2" />
+                      Email <span className="text-red-400 ml-1">*</span>
+                    </span>
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full bg-sky-900 border border-sky-700 rounded p-2 text-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    required
+                  />
+                </div>
+                
+                {/* Phone Number Field */}
+                <div className="mb-4">
+                  <label htmlFor="phone" className="block text-sky-200 mb-1 font-medium">
+                    <span className="flex items-center">
+                      <Phone size={16} className="mr-2" />
+                      Phone Number <span className="text-red-400 ml-1">*</span>
+                    </span>
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full bg-sky-900 border border-sky-700 rounded p-2 text-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    required
+                  />
+                </div>
+                
+                {/* Address Field */}
+                <div className="mb-4">
+                  <label htmlFor="address" className="block text-sky-200 mb-1 font-medium">
+                    <span className="flex items-center">
+                      <Home size={16} className="mr-2" />
+                      Address <span className="text-red-400 ml-1">*</span>
+                    </span>
+                  </label>
+                  <textarea
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    rows="2"
+                    className="w-full bg-sky-900 border border-sky-700 rounded p-2 text-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    required
+                  />
+                </div>
+                
+                {/* Experience Field (Not Required) */}
+                <div className="mb-6">
+                  <label htmlFor="experience" className="block text-sky-200 mb-1 font-medium">
+                    <span className="flex items-center">
+                      <Award size={16} className="mr-2" />
+                      Relevant Experience
+                    </span>
+                  </label>
+                  <textarea
+                    id="experience"
+                    name="experience"
+                    value={formData.experience}
+                    onChange={handleInputChange}
+                    rows="3"
+                    placeholder="Tell us about any relevant experience you have (optional)"
+                    className="w-full bg-sky-900 border border-sky-700 rounded p-2 text-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex gap-2 mt-6">
+                  <button 
+                    type="button"
+                    onClick={() => setIsVolunteerModalOpen(false)}
+                    className="w-1/2 bg-sky-700 hover:bg-sky-600 text-white py-2 px-4 rounded-md transition-colors duration-300"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={!isFormValid()}
+                    className={`w-1/2 py-2 px-4 rounded-md transition-colors duration-300 flex items-center justify-center ${
+                      isFormValid() 
+                        ? 'bg-sky-500 hover:bg-sky-400 text-white' 
+                        : 'bg-sky-800 text-sky-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <span>Submit</span>
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

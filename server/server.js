@@ -3,6 +3,8 @@ const db = require('./db');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const eventRoute = require('./routes/event.route');
+const volunteerRoute = require('./routes/volunteer.route');
 
 
 dotenv.config();
@@ -21,6 +23,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
 }));
+
+app.use('/api/events', eventRoute);
+app.use('/api/volunteers', volunteerRoute);
 
 app.get('/', (req, res) => {
   res.send('Server is running...');

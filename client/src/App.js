@@ -9,38 +9,36 @@ import AthleteCard from "./components/AthleteCard";
 import AthletesList from "./pages/SponsorDashboard";
 
 function App() {
-  // const [loading, setLoading] = useState(false); // State to manage loading overlay
-  // return (
-  //   <BrowserRouter>
-  //     {loading && <Loader />} {/* Show loading overlay */}
-  //     <Routes>
-  //       {/* Home Page without Navbar */}
-
-  //       <Route path="/" element={<HomePage setLoading={setLoading} />} />
-  //       <Route path="/volunteer" element={<VolunteerPage />} />
-
-  //       {/* All Other Pages with Navbar */}
-  //       <Route
-  //         path="/*"
-  //         element={
-  //           <div className="App bg-white">
-  //             {!loading && <Navbar />} {/* Hide Navbar while loading */}
-  //             <Routes>
-  //               <Route
-  //                 path="/sampleRoute"
-  //                 element={
-  //                   <HomePage setLoading={setLoading} loading={loading} />
-  //                 }
-  //               />
-  //             </Routes>
-  //           </div>
-  //         }
-  //       />
-        
-  //     </Routes>
-  //   </BrowserRouter>
+  const [loading, setLoading] = useState(false); // State to manage loading overlay
   return (
-    <AthletesList/>
+    <BrowserRouter>
+      {loading && <Loader />} {/* Show loading overlay */}
+      <Routes>
+        {/* Home Page without Navbar */}
+
+        <Route path="/" element={<HomePage setLoading={setLoading} />} />
+        <Route path="/volunteer" element={<VolunteerPage />} />
+
+        {/* All Other Pages with Navbar */}
+        <Route
+          path="/*"
+          element={
+            <div className="App bg-white">
+              {!loading && <Navbar />} {/* Hide Navbar while loading */}
+              <Routes>
+                <Route
+                  path="/athletes"
+                  element={
+                    <AthletesList setLoading={setLoading} loading={loading} />
+                  }
+                />
+              </Routes>
+            </div>
+          }
+        />
+        
+      </Routes>
+    </BrowserRouter>
   );
 }
 

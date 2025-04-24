@@ -364,9 +364,9 @@ function HomePage() {
               Connecting athletes, coaches, and communities to build a stronger sporting nation through the National Olympic Committee of Sri Lanka.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-6 py-3 rounded-full bg-sky-500 hover:bg-sky-400 transition-colors text-white font-bold text-lg">
+              <Link to="/athletes" className="px-6 py-3 rounded-full bg-sky-500 hover:bg-sky-400 transition-colors text-white font-bold text-lg">
                 Get Started
-              </button>
+              </Link>
               <button className="px-6 py-3 rounded-full border-2 border-white hover:bg-white hover:text-sky-900 transition-colors font-bold text-lg">
                 Sign In
               </button>

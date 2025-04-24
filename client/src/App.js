@@ -28,27 +28,15 @@ function App() {
             <div className="App bg-white">
               {!loading && <Navbar />} {/* Hide Navbar while loading */}
               <Routes>
-                <Route
-                  path="/sampleRoute"
-                  element={
-                    <HomePage setLoading={setLoading} loading={loading} />
-                  }
-                />
+                
                 <Route
                   path="/volunteer"
                   element={<VolunteerPage setLoading={setLoading} />}
                 />
-                <Route
-                  path="/athlete/:id"
-                  element={<AthleteCard setLoading={setLoading} />}
-                />
-                <Route
-                  path="/volunteer/:id"
-                  element={<VolunteerCard setLoading={setLoading} />}
-                />
+           
                 <Route
                   path="/athletes"
-                  element={<AthletesList setLoading={setLoading} />}
+                  <AthletesList setLoading={setLoading} loading={loading} />
                 />
                 <Route path="/player" element={<PlayerProfile />} />
                 <Route path="/signup" element={<SignupForm />} />

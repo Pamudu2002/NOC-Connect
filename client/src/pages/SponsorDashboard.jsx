@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import AthleteCard from "../components/AthleteCard";
 import { api } from "../api/api";
 
-
 const AthletesList = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [nameSearchTerm, setNameSearchTerm] = useState("");
+  const [sportSearchTerm, setSportSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [athleteLlist, setAthleteList] = useState([]);
+  const [athleteList, setAthleteList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -30,26 +30,34 @@ const AthletesList = () => {
 
   // Get unique sports for dropdown
   const uniqueSports = [
-    ...new Set(athleteLlist.map((athlete) => athlete.sport)),
+    ...new Set(athleteList.map((athlete) => athlete.sport)),
   ];
 
-  // Filter athletes based on search term
-  const filteredAthletes = athleteLlist.filter(
+  // Filter athletes based on both name and sport search terms
+  const filteredAthletes = athleteList.filter(
     (athlete) =>
-      searchTerm === "" ||
-      athlete.sport.toLowerCase().includes(searchTerm.toLowerCase())
+      (nameSearchTerm === "" ||
+        athlete.userId.name.toLowerCase().includes(nameSearchTerm.toLowerCase())) &&
+      (sportSearchTerm === "" ||
+        athlete.sport.toLowerCase() === sportSearchTerm.toLowerCase())
   );
 
   // Select sport handler
   const handleSportSelect = (sport) => {
-    setSearchTerm(sport);
+    setSportSearchTerm(sport);
+    setIsDropdownOpen(false);
+  };
+
+  // Reset all filters
+  const resetFilters = () => {
+    setNameSearchTerm("");
+    setSportSearchTerm("");
     setIsDropdownOpen(false);
   };
 
   return (
     <div className="mx-auto p-4 bg-sky-950">
-      
-      <div className=" top-0 z-10 bg-sky-900 shadow-lg pt-4 pb-4 px-4 rounded-b-lg">
+      <div className="top-0 z-10 bg-sky-900 shadow-lg pt-4 pb-4 px-4 rounded-b-lg">
         <h1 className="text-3xl font-bold text-sky-50 mb-6">
           Athletes Directory
         </h1>
@@ -74,13 +82,13 @@ const AthletesList = () => {
           </h2>
 
           <div className="flex flex-col md:flex-row gap-4">
-            {/* Search Input */}
+            {/* Name Search Input */}
             <div className="flex-1">
               <label
-                htmlFor="sport-search"
+                htmlFor="name-search"
                 className="block text-sm font-medium text-sky-200 mb-1"
               >
-                Search by Sport
+                Search by Name
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -100,16 +108,16 @@ const AthletesList = () => {
                 </div>
                 <input
                   type="text"
-                  id="sport-search"
-                  className="block w-full pl-10 pr-3 py-2 border border-sky-600 rounded-lg bg-sky-800 text-sky-100 placeholder-sky-400  "
-                  placeholder="Type to search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  id="name-search"
+                  className="block w-full pl-10 pr-3 py-2 border border-sky-600 rounded-lg bg-sky-800 text-sky-100 placeholder-sky-400"
+                  placeholder="Type athlete name..."
+                  value={nameSearchTerm}
+                  onChange={(e) => setNameSearchTerm(e.target.value)}
                 />
               </div>
             </div>
 
-            {/* Enhanced Sport Dropdown */}
+            {/* Sport Dropdown */}
             <div className="md:w-1/3">
               <label
                 htmlFor="sport-select"
@@ -124,7 +132,7 @@ const AthletesList = () => {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   <span className="flex items-center">
-                    {searchTerm ? (
+                    {sportSearchTerm ? (
                       <>
                         <span className="h-6 w-6 flex items-center justify-center bg-sky-700 rounded-full mr-2">
                           <svg
@@ -142,7 +150,7 @@ const AthletesList = () => {
                           </svg>
                         </span>
                         <span className="block truncate text-sky-100">
-                          {searchTerm}
+                          {sportSearchTerm}
                         </span>
                       </>
                     ) : (
@@ -176,7 +184,7 @@ const AthletesList = () => {
                       <button
                         type="button"
                         className={`w-full text-left px-4 py-2 flex items-center hover:bg-sky-700 ${
-                          searchTerm === ""
+                          sportSearchTerm === ""
                             ? "bg-sky-700 text-sky-100"
                             : "text-sky-100"
                         }`}
@@ -206,7 +214,7 @@ const AthletesList = () => {
                           key={index}
                           type="button"
                           className={`w-full text-left px-4 py-2 flex items-center hover:bg-sky-700 ${
-                            searchTerm === sport
+                            sportSearchTerm === sport
                               ? "bg-sky-700 text-sky-100"
                               : "text-sky-100"
                           }`}
@@ -271,10 +279,7 @@ const AthletesList = () => {
             {/* Reset Button */}
             <div className="md:w-auto flex items-end">
               <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setIsDropdownOpen(false);
-                }}
+                onClick={resetFilters}
                 className="w-full md:w-auto px-4 py-2 bg-gradient-to-r from-sky-600 to-sky-700 text-sky-100 rounded-lg hover:from-sky-500 hover:to-sky-600 transition-colors duration-300 flex items-center justify-center gap-2 shadow-sm"
               >
                 <svg
@@ -299,33 +304,50 @@ const AthletesList = () => {
 
       {/* Content Section with top padding to prevent overlap */}
       <div className="px-4 py-6">
-        {/* Results Count */}
+        {/* Results Count with Search Info */}
         <div className="mb-4 flex justify-between items-center">
           <p className="text-sky-200">
             <span className="font-medium">{filteredAthletes.length}</span>{" "}
             {filteredAthletes.length === 1 ? "athlete" : "athletes"} found
-            {searchTerm && (
+            {(nameSearchTerm || sportSearchTerm) && (
               <span>
                 {" "}
-                for "
-                <span className="font-semibold text-sky-100">{searchTerm}</span>
-                "
+                {nameSearchTerm && (
+                  <span>
+                    with name containing "
+                    <span className="font-semibold text-sky-100">
+                      {nameSearchTerm}
+                    </span>
+                    "{sportSearchTerm && " and "}
+                  </span>
+                )}
+                {sportSearchTerm && (
+                  <span>
+                    in sport "
+                    <span className="font-semibold text-sky-100">
+                      {sportSearchTerm}
+                    </span>
+                    "
+                  </span>
+                )}
               </span>
             )}
           </p>
         </div>
 
-        {/* Athletes Grid */}
-        {filteredAthletes.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAthletes.map((athlete, index) => (
-              <AthleteCard key={index} athlete={athlete} />
-            ))}
-          </div>
-        ) : (
+        {/* Loading State */}
+        {isLoading && (
           <div className="bg-sky-900 rounded-xl p-8 text-center border border-sky-700">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-300 mx-auto"></div>
+            <p className="mt-4 text-sky-200">Loading athletes...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-sky-900 rounded-xl p-8 text-center border border-red-700">
             <svg
-              className="mx-auto h-12 w-12 text-sky-400"
+              className="mx-auto h-12 w-12 text-red-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -334,23 +356,57 @@ const AthletesList = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
               />
             </svg>
-            <h3 className="mt-4 text-lg font-medium text-sky-100">
-              No athletes found
-            </h3>
-            <p className="mt-2 text-sky-300">
-              Try changing your search criteria or clear filters
-            </p>
+            <h3 className="mt-4 text-lg font-medium text-red-100">{error}</h3>
             <button
-              onClick={() => setSearchTerm("")}
+              onClick={() => window.location.reload()}
               className="mt-4 px-4 py-2 bg-sky-600 text-sky-100 rounded-lg hover:bg-sky-500 transition-colors"
             >
-              Clear Search
+              Try Again
             </button>
           </div>
         )}
+
+        {/* Athletes Grid */}
+        {!isLoading &&
+          !error &&
+          (filteredAthletes.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredAthletes.map((athlete, index) => (
+                <AthleteCard key={index} athlete={athlete} />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-sky-900 rounded-xl p-8 text-center border border-sky-700">
+              <svg
+                className="mx-auto h-12 w-12 text-sky-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <h3 className="mt-4 text-lg font-medium text-sky-100">
+                No athletes found
+              </h3>
+              <p className="mt-2 text-sky-300">
+                Try changing your search criteria or clear filters
+              </p>
+              <button
+                onClick={resetFilters}
+                className="mt-4 px-4 py-2 bg-sky-600 text-sky-100 rounded-lg hover:bg-sky-500 transition-colors"
+              >
+                Clear Filters
+              </button>
+            </div>
+          ))}
       </div>
     </div>
   );

@@ -6,7 +6,13 @@ const dotenv = require('dotenv');
 const eventRoute = require('./routes/event.route');
 const athleteRoute = require('./routes/athlete.route');
 const userRoute = require('./routes/user.route')
+
 const cookieParser = require('cookie-parser');
+
+const volunteerRoute = require('./routes/volunteer.route');
+const achievementRoute = require('./routes/achievement.route');
+
+
 
 
 dotenv.config();
@@ -29,6 +35,8 @@ app.use(cookieParser());
 app.use('/api/events', eventRoute);
 app.use('/api/athletes', athleteRoute);
 app.use('/api/users', userRoute);
+app.use('/api/volunteers', volunteerRoute);
+app.use('/api/achievements', achievementRoute);
 
 
 app.get('/', (req, res) => {

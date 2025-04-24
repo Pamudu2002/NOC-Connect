@@ -171,13 +171,13 @@ export default function ChatButton() {
     if (!showSuggestions || loading) return null;
     
     return (
-      <div className="w-full flex flex-col items-start space-y-2 mt-2 mb-4">
-        <div className="text-xs text-sky-800 font-medium ml-1 mb-1">Suggested questions:</div>
+      <div className="w-full flex flex-col items-end space-y-2 mt-2 mb-4">
+        <div className="text-xs text-sky-600 font-medium ml-1 mb-1">Suggested questions:</div>
         {getCurrentPageSuggestions().map((suggestion, index) => (
           <button
             key={index}
             onClick={() => handleSuggestionClick(suggestion)}
-            className="px-4 py-2 bg-sky-50 text-sky-950 rounded-lg text-left border-2 border-sky-500 hover:bg-sky-100 transition-colors shadow-md w-4/5"
+            className="px-4 py-2 bg-gradient-to-r from-sky-950 to-sky-800 text-sky-50 rounded-lg text-left border-2 border-sky-700 hover:bg-sky-100 transition-colors shadow-md w-4/5"
           >
             {suggestion}
           </button>
@@ -222,7 +222,7 @@ export default function ChatButton() {
                                         <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-3 overflow-hidden">
             
                                              <img 
-                                             src="/path/to/your/logo.png" 
+                                             src="./chatlogo.png" 
                                              alt="Logo" 
                                              className="w-full h-full object-cover"
                                                    />
@@ -251,7 +251,7 @@ export default function ChatButton() {
                                       <svg className="w-full h-8" viewBox="0 0 1200 120" preserveAspectRatio="none">
                                       <path 
                                       d="M0,120 C300,40 900,40 1200,120 L1200,120 L0,120 Z" 
-                                      className="fill-sky-200"
+                                      className="fill-sky-900"
                                       />
                                       </svg>
                                  </div>
@@ -261,12 +261,12 @@ export default function ChatButton() {
           {/* Chat Body */}
           <div 
             ref={chatContainerRef} 
-            className="flex-grow flex flex-col w-full px-4 py-3 space-y-4 overflow-y-auto bg-sky-200"
+            className="flex-grow flex flex-col w-full px-4 py-3 space-y-4 overflow-y-auto bg-sky-900"
           >
             {messages.map((msg, index) => (
               <div key={index} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                 <span 
-                  className={`px-4 py-2  rounded-lg break-words ${msg.sender === "user" ? "bg-gradient-to-r from-sky-800 to-sky-400 text-sky-200" : "bg-sky-50 text-sky-950"}`}
+                  className={`px-4 py-2  rounded-lg break-words ${msg.sender === "user" ? "bg-gradient-to-r from-sky-700 to-sky-400 text-sky-200" : "bg-sky-950 text-sky-50"}`}
                   style={{
                     wordBreak: "break-word",
                     maxWidth: "75%",
@@ -295,11 +295,11 @@ export default function ChatButton() {
           </div>
 
           {/* Chat Footer */}
-          <div className="border-t-2 flex items-center p-3 bg-gradient-to-r from-sky-600 to-sky-400 rounded-b-lg">
+          <div className="border-t-1 flex items-center p-3 bg-gradient-to-r from-sky-700 to-sky-400 rounded-b-lg">
             <div className="flex flex-wrap w-full relative shadow-xl">
               <textarea
                 placeholder="Type here..."
-                className="w-full rounded-lg px-4 py-2 border-2 pr-10 resize-none bg-sky-100"
+                className="w-full rounded-lg px-4 py-2 border-2 pr-10 resize-none bg-sky-950 text-sky-50"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}

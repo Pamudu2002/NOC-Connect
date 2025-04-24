@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import {
   User,
   MapPin,
@@ -21,59 +21,35 @@ import {
   Users,
   Star,
 } from "lucide-react";
+import { api } from "../api/api";
 
 export default function PlayerProfile() {
   // State management
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
-    name: "Alex Johnson",
-    title: "Professional Gamer | Team Captain",
-    location: "Seattle, WA",
-    bio: "Competitive gamer with 5+ years of professional experience. Specializing in strategic team play with exceptional communication skills.",
-    sport: "Valorant",
-    dateOfBirth: "1995-06-15",
-    nationality: "United States",
-    birthPlace: "Portland",
-    birthCountry: "USA",
-    height: "175",
-    weight: "70",
-    education: [
-      {
-        school: "University of Washington",
-        degree: "B.S. Computer Science",
-        period: "2018 - 2022",
-        focus: "Game Development & AI",
-      },
-    ],
-    achievements: [
-      {
-        title: "World Championship Finalist",
-        description: "2023 Global Gaming Tournament",
-        date: "Dec 2023",
-        icon: "Trophy",
-        image: "https://example.com/achievement1.jpg",
-      },
-      {
-        title: "Regional MVP",
-        description: "West Coast Gaming League",
-        date: "Aug 2023",
-        icon: "Star",
-      },
-      {
-        title: "Most Improved Player",
-        description: "Team Recognition Award",
-        date: "Feb 2022",
-        icon: "Award",
-      },
-    ],
-    socialMedia: {
-      twitter: "@alexjgaming",
-      twitch: "alexjgaming",
-      youtube: "AlexJohnsonGaming",
+    "name": "",
+    "title": "",
+    "location": "",
+    "bio": "",
+    "sport": "",
+    "dateOfBirth": "",
+    "nationality": "",
+    "birthPlace": "",
+    "birthCountry": "",
+    "gender": "",
+    "height": "",
+    "weight": "",
+    "education": [],
+    "achievements": [],
+    "socialMedia": {
+      "twitter": "",
+      "twitch": "",
+      "youtube": ""
     },
-    email: "alex.johnson@email.com",
-    profilePicture: "https://tse4.mm.bing.net/th/id/OIP.lnuUbzQXmwNLQXnuwN-GwgHaKQ?rs=1&pid=ImgDetMain",
-  });
+    "email": "",
+    "profilePicture": ""
+  }
+  );
 
   const [newAchievement, setNewAchievement] = useState({
     title: "",
@@ -81,6 +57,39 @@ export default function PlayerProfile() {
     date: "",
     icon: "Award",
   });
+
+  useEffect(() => {
+    if (!isEditing) {
+    api.post("/users/details", { userId: "680a275d45f32c33d9e6e7db" }).then((response) => {
+      setProfile({
+        name: response.data.name || "",
+        title: response.data.title || "",
+        location: response.data.location || "",
+        bio: response.data.bio || "",
+        sport: response.data.sport || "",
+        dateOfBirth: response.data.dateOfBirth || "",
+        nationality: response.data.nationality || "",
+        birthPlace: response.data.birthPlace || "",
+        birthCountry: response.data.birthCountry || "",
+        gender: response.data.gender || "",
+        height: response.data.height || "",
+        weight: response.data.weight || "",
+        education: response.data.education || [],
+        achievements: response.data.achievements || [],
+        socialMedia: {
+          twitter: response.data.socialMedia?.twitter || "",
+          twitch: response.data.socialMedia?.twitch || "",
+          youtube: response.data.socialMedia?.youtube || "",
+        },
+        email: response.data.email || "",
+        profilePicture: response.data.profilePicture || "",
+      });
+      
+    }).catch((error) => {
+      console.error("Error fetching user details:", error);
+    });
+  }
+  }, []);
 
   // Event handlers
   const handleProfileChange = (field, value) => {
@@ -127,12 +136,6 @@ export default function PlayerProfile() {
         ...profile,
         achievements: [...profile.achievements, newAchievement],
       });
-      setNewAchievement({
-        title: "",
-        description: "",
-        date: "",
-        icon: "Award",
-      });
     }
   };
 
@@ -166,9 +169,9 @@ export default function PlayerProfile() {
           ></div>
         </div>
         <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-black/30 to-transparent"></div>
-        
+
         {/* Edit Profile Button */}
-        <div className="absolute top-6 right-6">
+        {true && <div className="absolute top-6 right-6">
           <button
             onClick={() => setIsEditing(!isEditing)}
             className={`flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 shadow-md ${
@@ -187,13 +190,17 @@ export default function PlayerProfile() {
               </>
             )}
           </button>
-        </div>
+        </div>}
       </div>
 
       {/* Profile Info */}
       <div className="relative px-8 pb-8">
         <div className="absolute -top-24 left-8 h-40 w-40 rounded-full border-4 border-sky-800 bg-gradient-to-r from-sky-800 to-sky-800 flex items-center justify-center shadow-xl transform hover:scale-105 transition-all duration-300">
-          <img src={profile.profilePicture} alt="" className="rounded-full h-36 w-36 object-cover" />
+          <img
+            src={profile.profilePicture}
+            alt=""
+            className="rounded-full h-36 w-36 object-cover"
+          />
         </div>
 
         <div className="ml-48 pt-6">
@@ -218,7 +225,9 @@ export default function PlayerProfile() {
               className="text-xl text-sky-300 w-full mb-3 px-3 py-2 border-2 border-sky-500 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none bg-sky-700"
             />
           ) : (
-            <p className="text-xl text-sky-300 font-medium tracking-wide">{profile.title}</p>
+            <p className="text-xl text-sky-300 font-medium tracking-wide">
+              {profile.title}
+            </p>
           )}
 
           <div className="flex items-center text-base text-sky-400 mt-4">
@@ -227,7 +236,9 @@ export default function PlayerProfile() {
               <input
                 type="text"
                 value={profile.location}
-                onChange={(e) => handleProfileChange("location", e.target.value)}
+                onChange={(e) =>
+                  handleProfileChange("location", e.target.value)
+                }
                 className="px-3 py-2 border-2 border-sky-500 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none w-full bg-sky-700 text-sky-300"
               />
             ) : (
@@ -252,7 +263,7 @@ export default function PlayerProfile() {
           </div>
 
           {/* Social Media */}
-          <div className="mt-6 flex space-x-4">
+          {/* <div className="mt-6 flex space-x-4">
             <a
               href="#"
               className="p-3 bg-sky-700 rounded-lg hover:bg-sky-600 transition-all duration-300 shadow-sm"
@@ -274,7 +285,7 @@ export default function PlayerProfile() {
             >
               <Youtube size={22} className="text-red-400" />
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
@@ -286,7 +297,7 @@ export default function PlayerProfile() {
         <Gamepad size={22} className="mr-3 text-sky-400" />
         Player Details
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
         <div className="bg-sky-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
           <div className="flex items-center">
             <Gamepad size={24} className="text-sky-400 mr-3" />
@@ -333,7 +344,9 @@ export default function PlayerProfile() {
               <Globe size={24} className="text-sky-400 mr-3" />
               <div>
                 <p className="text-sm text-sky-300 font-medium">Nationality</p>
-                <p className="text-sky-200 font-semibold">{profile.nationality}</p>
+                <p className="text-sky-200 font-semibold">
+                  {profile.nationality}
+                </p>
               </div>
             </div>
           </div>
@@ -344,10 +357,24 @@ export default function PlayerProfile() {
             <div className="flex items-center">
               <User size={24} className="text-sky-400 mr-3" />
               <div>
-                <p className="text-sm text-sky-300 font-medium">Physical Info</p>
+                <p className="text-sm text-sky-300 font-medium">
+                  Physical Info
+                </p>
                 <p className="text-sky-200 font-semibold">
                   {profile.height}cm • {profile.weight}kg
                 </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {profile.gender && (
+          <div className="bg-sky-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="flex items-center">
+              <User size={24} className="text-sky-400 mr-3" />
+              <div>
+                <p className="text-sm text-sky-300 font-medium">Gender</p>
+                <p className="text-sky-200 font-semibold">{profile.gender}</p>
               </div>
             </div>
           </div>
@@ -369,7 +396,9 @@ export default function PlayerProfile() {
           className="w-full px-4 py-3 border-2 border-sky-500 rounded-lg h-36 bg-sky-700 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
         />
       ) : (
-        <p className="text-sky-300 leading-relaxed text-lg tracking-wide">{profile.bio}</p>
+        <p className="text-sky-300 leading-relaxed text-lg tracking-wide">
+          {profile.bio}
+        </p>
       )}
     </div>
   );
@@ -414,11 +443,7 @@ export default function PlayerProfile() {
                       type="text"
                       value={edu.period}
                       onChange={(e) =>
-                        handleEducationChange(
-                          index,
-                          "period",
-                          e.target.value
-                        )
+                        handleEducationChange(index, "period", e.target.value)
                       }
                       className="px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-700 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
                     />
@@ -435,7 +460,9 @@ export default function PlayerProfile() {
                 </>
               ) : (
                 <>
-                  <h4 className="font-medium text-xl text-sky-200">{edu.school}</h4>
+                  <h4 className="font-medium text-xl text-sky-200">
+                    {edu.school}
+                  </h4>
                   <p className="text-sky-300 text-lg">{edu.degree}</p>
                   <div className="flex items-center text-sky-400 mt-2">
                     <Calendar size={16} className="mr-2" />
@@ -478,11 +505,7 @@ export default function PlayerProfile() {
                       type="text"
                       value={achievement.title}
                       onChange={(e) =>
-                        handleAchievementChange(
-                          index,
-                          "title",
-                          e.target.value
-                        )
+                        handleAchievementChange(index, "title", e.target.value)
                       }
                       className="font-medium w-full mb-2 px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-600 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
                     />
@@ -504,11 +527,7 @@ export default function PlayerProfile() {
                         type="text"
                         value={achievement.date}
                         onChange={(e) =>
-                          handleAchievementChange(
-                            index,
-                            "date",
-                            e.target.value
-                          )
+                          handleAchievementChange(index, "date", e.target.value)
                         }
                         className="px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-600 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
                       />
@@ -516,11 +535,7 @@ export default function PlayerProfile() {
                     <select
                       value={achievement.icon || "Award"}
                       onChange={(e) =>
-                        handleAchievementChange(
-                          index,
-                          "icon",
-                          e.target.value
-                        )
+                        handleAchievementChange(index, "icon", e.target.value)
                       }
                       className="mt-3 px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-600 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
                     >
@@ -531,7 +546,9 @@ export default function PlayerProfile() {
                   </>
                 ) : (
                   <>
-                    <h4 className="font-medium text-xl text-sky-200">{achievement.title}</h4>
+                    <h4 className="font-medium text-xl text-sky-200">
+                      {achievement.title}
+                    </h4>
                     <p className="text-sky-300 text-lg mt-1">
                       {achievement.description}
                     </p>
@@ -636,7 +653,7 @@ export default function PlayerProfile() {
     </div>
   );
 
-  const SaveButton = () => (
+  const SaveButton = () =>
     isEditing && (
       <div className="flex justify-end mb-8">
         <button
@@ -646,8 +663,7 @@ export default function PlayerProfile() {
           <Save size={20} className="mr-3" /> Save Profile
         </button>
       </div>
-    )
-  );
+    );
 
   // Main render
   return (

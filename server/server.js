@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const eventRoute = require('./routes/event.route');
 const athleteRoute = require('./routes/athlete.route');
 const userRoute = require('./routes/user.route')
+const cookieParser = require('cookie-parser');
 
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
 }));
+app.use(cookieParser());
 
 app.use('/api/events', eventRoute);
 app.use('/api/athletes', athleteRoute);

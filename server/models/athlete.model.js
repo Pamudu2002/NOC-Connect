@@ -11,7 +11,7 @@ const athleteSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    loacation: {
+    location: {
       type: String,
       required: true,
     },
@@ -44,30 +44,6 @@ const athleteSchema = new mongoose.Schema(
     nationility: String,
     height: Number,
     weight: Number,
-
-    // name: {
-    //   type: String,
-    //   required: true,
-    // },
-    // achievements: [{
-    //   title: String,
-    //   description: String,
-    //   date: String,
-    //   icon: String,
-    //   image: String
-    // }],
-    // socialMedia: {
-    //   twitter: String,
-    //   twitch: String,
-    //   youtube: String
-    // },
-    // email: {
-    //   type: String,
-    //   required: true
-    // },
-    // profilePicture: {
-    //   type: String
-    // }
   },
   { timestamps: true }
 );

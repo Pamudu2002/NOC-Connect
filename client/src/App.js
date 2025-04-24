@@ -8,7 +8,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AthleteCard from "./components/AthleteCard";
 import AthletesList from "./pages/SponsorDashboard";
 import PlayerProfile from "./pages/PlayerProfile";
-
+import SignupForm from "./pages/SignupPage";
+import LoginForm from "./pages/LoginPage";
 function App() {
   const [loading, setLoading] = useState(false); // State to manage loading overlay
   return (
@@ -50,6 +51,8 @@ function App() {
                   element={<AthletesList setLoading={setLoading} />}
                 />
                 <Route path="/player" element={<PlayerProfile />} />
+                <Route path="/signup" element={<SignupForm />} />
+                <Route path="/signin" element={<LoginForm />} />
               </Routes>
             </div>
           }

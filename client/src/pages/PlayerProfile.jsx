@@ -1,681 +1,418 @@
-import { useState , useEffect } from "react";
-import {
-  User,
-  MapPin,
-  Briefcase,
-  GraduationCap,
-  Calendar,
-  Award,
-  Edit2,
-  Save,
-  X,
-  Mail,
-  Globe,
-  Plus,
-  Trophy,
-  Gamepad,
-  Twitter,
-  Twitch,
-  Youtube,
-  Heart,
-  Users,
-  Star,
-} from "lucide-react";
-import { api } from "../api/api";
+import { useState, useEffect } from 'react';
+import { Edit2, MapPin, Calendar, Award, Book, Save, User, Flag, Activity, X } from 'lucide-react';
+import { api } from '../api/api';
 
-export default function PlayerProfile() {
-  // State management
-  const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState({
-    "name": "",
-    "title": "",
-    "location": "",
-    "bio": "",
-    "sport": "",
-    "dateOfBirth": "",
-    "nationality": "",
-    "birthPlace": "",
-    "birthCountry": "",
-    "gender": "",
-    "height": "",
-    "weight": "",
-    "education": [],
-    "achievements": [],
-    "socialMedia": {
-      "twitter": "",
-      "twitch": "",
-      "youtube": ""
-    },
-    "email": "",
-    "profilePicture": ""
-  }
+export default function AthleteProfile() {
+  // Initial state from the provided user data
+  const [user, setUser] = useState(
+    {
+      "name": "",
+      "title": "",
+      "location": "",
+      "bio": "",
+      "sport": "",
+      "dateOfBirth": "",
+      "nationality": "",
+      "birthPlace": "",
+      "birthCountry": "",
+      "gender": "",
+      "height": "",
+      "weight": "",
+      "education": [],
+      "achievements": [],
+      "socialMedia": {
+        "twitter": "",
+        "twitch": "",
+        "youtube": ""
+      },
+      "email": "",
+      "profilePicture": ""
+    }    
   );
-
-  const [newAchievement, setNewAchievement] = useState({
-    title: "",
-    description: "",
-    date: "",
-    icon: "Award",
-  });
-
   useEffect(() => {
-    if (!isEditing) {
-    api.post("/users/details", { userId: "680a275d45f32c33d9e6e7db" }).then((response) => {
-      setProfile({
-        name: response.data.name || "",
-        title: response.data.title || "",
-        location: response.data.location || "",
-        bio: response.data.bio || "",
-        sport: response.data.sport || "",
-        dateOfBirth: response.data.dateOfBirth || "",
-        nationality: response.data.nationality || "",
-        birthPlace: response.data.birthPlace || "",
-        birthCountry: response.data.birthCountry || "",
-        gender: response.data.gender || "",
-        height: response.data.height || "",
-        weight: response.data.weight || "",
-        education: response.data.education || [],
-        achievements: response.data.achievements || [],
-        socialMedia: {
-          twitter: response.data.socialMedia?.twitter || "",
-          twitch: response.data.socialMedia?.twitch || "",
-          youtube: response.data.socialMedia?.youtube || "",
-        },
-        email: response.data.email || "",
-        profilePicture: response.data.profilePicture || "",
-      });
-      
-    }).catch((error) => {
+    api.post("/users/details", { userId: "680a275d45f32c33d9e6e7db" })
+    .then((response) => {
+      console.log("API response:", response.data); // check this
+      setUser(response.data);
+    })
+    .catch((error) => {
       console.error("Error fetching user details:", error);
     });
-  }
   }, []);
 
-  // Event handlers
-  const handleProfileChange = (field, value) => {
-    setProfile({
-      ...profile,
-      [field]: value,
+  const [editing, setEditing] = useState(false);
+  const [editableUser, setEditableUser] = useState(user);
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditableUser({
+      ...editableUser,
+      [name]: value
     });
   };
-
-  const handleEducationChange = (index, field, value) => {
-    const updatedEducation = [...profile.education];
-    updatedEducation[index] = {
-      ...updatedEducation[index],
-      [field]: value,
-    };
-    setProfile({
-      ...profile,
-      education: updatedEducation,
-    });
+  
+  const handleEdit = () => {
+    setEditing(true);
+    setEditableUser(user);
+  };
+  
+  const handleSave = () => {
+    setUser(editableUser);
+    setEditing(false);
+  };
+  
+  const handleCancel = () => {
+    setEditing(false);
   };
 
-  const handleAchievementChange = (index, field, value) => {
-    const updatedAchievements = [...profile.achievements];
-    updatedAchievements[index] = {
-      ...updatedAchievements[index],
-      [field]: value,
-    };
-    setProfile({
-      ...profile,
-      achievements: updatedAchievements,
-    });
-  };
-
-  const handleNewAchievementChange = (field, value) => {
-    setNewAchievement({
-      ...newAchievement,
-      [field]: value,
-    });
-  };
-
-  const addNewAchievement = () => {
-    if (newAchievement.title && newAchievement.description) {
-      setProfile({
-        ...profile,
-        achievements: [...profile.achievements, newAchievement],
-      });
-    }
-  };
-
-  // Helper functions
-  const getIconComponent = (iconName) => {
-    switch (iconName) {
-      case "Trophy":
-        return <Trophy size={20} className="text-yellow-500" />;
-      case "Star":
-        return <Star size={20} className="text-yellow-500" />;
-      case "Award":
-        return <Award size={20} className="text-sky-400" />;
-      default:
-        return <Award size={20} className="text-sky-400" />;
-    }
-  };
-
-  // UI Components
-  const ProfileHeader = () => (
-    <div className="bg-sky-800 rounded-xl shadow-lg overflow-auto mb-8 transition-all duration-300 hover:shadow-xl">
-      {/* Banner with pattern overlay */}
-      <div className="h-56 bg-gradient-to-r from-sky-700 via-sky-800 to-sky-900 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          {/* Pattern overlay made with CSS */}
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px)`,
-              backgroundSize: "20px 20px",
-            }}
-          ></div>
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-200">
+      {/* Header/Navigation */}
+      <header className="bg-slate-800 py-4 shadow-md">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-sky-400">Athlete Profile</h1>
+          
         </div>
-        <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-black/30 to-transparent"></div>
-
-        {/* Edit Profile Button */}
-        {true && <div className="absolute top-6 right-6">
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className={`flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 shadow-md ${
-              isEditing
-                ? "bg-sky-700 text-sky-200 hover:bg-sky-600"
-                : "bg-sky-600 text-white hover:bg-sky-500"
-            }`}
-          >
-            {isEditing ? (
-              <>
-                <X size={16} className="mr-2" /> Cancel
-              </>
+      </header>
+      
+      <main className="container mx-auto py-8 px-4">
+        {/* Profile Header */}
+        <div className="bg-slate-800 rounded-lg shadow-lg overflow-hidden mb-6">
+          {/* Cover Photo */}
+          <div className="h-48 bg-gradient-to-r from-sky-800 to-slate-700"></div>
+          
+          {/* Profile Info */}
+          <div className="px-6 py-4 relative">
+            {/* Profile Picture */}
+            <div className="absolute -top-16 left-6 border-4 border-slate-800 rounded-full overflow-hidden">
+              <img src={user.profilePicture} alt={user.name} className="w-32 h-32 object-cover" />
+            </div>
+            
+            {/* Edit Button */}
+            {!editing ? (
+              <button 
+                onClick={handleEdit}
+                className="absolute top-4 right-4 flex items-center bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded"
+              >
+                <Edit2 size={16} className="mr-2" />
+                Edit Profile
+              </button>
             ) : (
-              <>
-                <Edit2 size={16} className="mr-2" /> Edit Profile
-              </>
+              <div className="absolute top-4 right-4 space-x-2">
+                <button 
+                  onClick={handleSave}
+                  className="flex items-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                >
+                  <Save size={16} className="mr-2" />
+                  Save
+                </button>
+                <button 
+                  onClick={handleCancel}
+                  className="flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                >
+                  <X size={16} className="mr-2" />
+                  Cancel
+                </button>
+              </div>
             )}
-          </button>
-        </div>}
-      </div>
-
-      {/* Profile Info */}
-      <div className="relative px-8 pb-8">
-        <div className="absolute -top-24 left-8 h-40 w-40 rounded-full border-4 border-sky-800 bg-gradient-to-r from-sky-800 to-sky-800 flex items-center justify-center shadow-xl transform hover:scale-105 transition-all duration-300">
-          <img
-            src={profile.profilePicture}
-            alt=""
-            className="rounded-full h-36 w-36 object-cover"
-          />
-        </div>
-
-        <div className="ml-48 pt-6">
-          {isEditing ? (
-            <input
-              type="text"
-              value={profile.name}
-              onChange={(e) => handleProfileChange("name", e.target.value)}
-              className="text-4xl font-bold w-full mb-2 px-3 py-2 border-2 border-sky-500 rounded-lg focus:ring-2 focus:ring-sky-400 focus:border-sky-500 outline-none bg-sky-700 text-sky-100"
-            />
-          ) : (
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-sky-200 to-white bg-clip-text text-transparent">
-              {profile.name}
-            </h2>
-          )}
-
-          {isEditing ? (
-            <input
-              type="text"
-              value={profile.title}
-              onChange={(e) => handleProfileChange("title", e.target.value)}
-              className="text-xl text-sky-300 w-full mb-3 px-3 py-2 border-2 border-sky-500 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none bg-sky-700"
-            />
-          ) : (
-            <p className="text-xl text-sky-300 font-medium tracking-wide">
-              {profile.title}
-            </p>
-          )}
-
-          <div className="flex items-center text-base text-sky-400 mt-4">
-            <MapPin size={18} className="mr-2 text-sky-400" />
-            {isEditing ? (
-              <input
-                type="text"
-                value={profile.location}
-                onChange={(e) =>
-                  handleProfileChange("location", e.target.value)
-                }
-                className="px-3 py-2 border-2 border-sky-500 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none w-full bg-sky-700 text-sky-300"
-              />
-            ) : (
-              <span className="font-medium">{profile.location}</span>
-            )}
-          </div>
-
-          <div className="mt-6 flex flex-wrap gap-4">
-            <div className="flex items-center text-sky-200 bg-sky-700 px-4 py-2 rounded-lg shadow-sm hover:bg-sky-600 transition-all duration-300">
-              <Mail size={18} className="mr-2 text-sky-400" />
-              {isEditing ? (
-                <input
-                  type="email"
-                  value={profile.email}
-                  onChange={(e) => handleProfileChange("email", e.target.value)}
-                  className="px-3 py-1 border-2 border-sky-500 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none bg-sky-600 text-sky-200"
-                />
-              ) : (
-                <span className="font-medium">{profile.email}</span>
-              )}
-            </div>
-          </div>
-
-          {/* Social Media */}
-          {/* <div className="mt-6 flex space-x-4">
-            <a
-              href="#"
-              className="p-3 bg-sky-700 rounded-lg hover:bg-sky-600 transition-all duration-300 shadow-sm"
-              aria-label="Twitter"
-            >
-              <Twitter size={22} className="text-blue-400" />
-            </a>
-            <a
-              href="#"
-              className="p-3 bg-sky-700 rounded-lg hover:bg-sky-600 transition-all duration-300 shadow-sm"
-              aria-label="Twitch"
-            >
-              <Twitch size={22} className="text-sky-400" />
-            </a>
-            <a
-              href="#"
-              className="p-3 bg-sky-700 rounded-lg hover:bg-sky-600 transition-all duration-300 shadow-sm"
-              aria-label="YouTube"
-            >
-              <Youtube size={22} className="text-red-400" />
-            </a>
-          </div> */}
-        </div>
-      </div>
-    </div>
-  );
-
-  const PlayerDetails = () => (
-    <div className="bg-sky-800 rounded-lg shadow-md p-6 mb-8 hover:shadow-lg transition-all duration-300 border-l-4 border-sky-600">
-      <h3 className="text-2xl font-semibold text-sky-300 mb-6 flex items-center">
-        <Gamepad size={22} className="mr-3 text-sky-400" />
-        Player Details
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
-        <div className="bg-sky-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
-          <div className="flex items-center">
-            <Gamepad size={24} className="text-sky-400 mr-3" />
-            <div>
-              <p className="text-sm text-sky-300 font-medium">Sport</p>
-              <p className="text-sky-200 font-semibold">{profile.sport}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-sky-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
-          <div className="flex items-center">
-            <Calendar size={24} className="text-sky-400 mr-3" />
-            <div>
-              <p className="text-sm text-sky-300 font-medium">Date of Birth</p>
-              <p className="text-sky-200 font-semibold">
-                {new Date(profile.dateOfBirth).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {profile.birthPlace && (
-          <div className="bg-sky-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="flex items-center">
-              <MapPin size={24} className="text-sky-400 mr-3" />
-              <div>
-                <p className="text-sm text-sky-300 font-medium">Birth Place</p>
-                <p className="text-sky-200 font-semibold">
-                  {profile.birthPlace}, {profile.birthCountry}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {profile.nationality && (
-          <div className="bg-sky-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="flex items-center">
-              <Globe size={24} className="text-sky-400 mr-3" />
-              <div>
-                <p className="text-sm text-sky-300 font-medium">Nationality</p>
-                <p className="text-sky-200 font-semibold">
-                  {profile.nationality}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {profile.height && profile.weight && (
-          <div className="bg-sky-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="flex items-center">
-              <User size={24} className="text-sky-400 mr-3" />
-              <div>
-                <p className="text-sm text-sky-300 font-medium">
-                  Physical Info
-                </p>
-                <p className="text-sky-200 font-semibold">
-                  {profile.height}cm • {profile.weight}kg
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {profile.gender && (
-          <div className="bg-sky-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="flex items-center">
-              <User size={24} className="text-sky-400 mr-3" />
-              <div>
-                <p className="text-sm text-sky-300 font-medium">Gender</p>
-                <p className="text-sky-200 font-semibold">{profile.gender}</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const AboutSection = () => (
-    <div className="bg-sky-800 rounded-lg shadow-md p-6 mb-8 hover:shadow-lg transition-all duration-300 border-l-4 border-sky-600">
-      <h3 className="text-2xl font-semibold text-sky-300 mb-4 flex items-center">
-        <User size={22} className="mr-3 text-sky-400" />
-        About
-      </h3>
-      {isEditing ? (
-        <textarea
-          value={profile.bio}
-          onChange={(e) => handleProfileChange("bio", e.target.value)}
-          className="w-full px-4 py-3 border-2 border-sky-500 rounded-lg h-36 bg-sky-700 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
-        />
-      ) : (
-        <p className="text-sky-300 leading-relaxed text-lg tracking-wide">
-          {profile.bio}
-        </p>
-      )}
-    </div>
-  );
-
-  const EducationSection = () => (
-    <div className="bg-sky-800 rounded-lg shadow-md p-6 mb-8 hover:shadow-lg transition-all duration-300 border-l-4 border-sky-600">
-      <h3 className="text-2xl font-semibold text-sky-300 mb-6 flex items-center">
-        <GraduationCap size={22} className="mr-3 text-sky-400" />
-        Education
-      </h3>
-      {profile.education.map((edu, index) => (
-        <div
-          key={index}
-          className="mb-6 border-b border-sky-700 pb-6 last:border-0 last:pb-0"
-        >
-          <div className="flex items-start">
-            <div className="mt-1 mr-4 p-4 bg-sky-700 rounded-lg shadow-sm">
-              <GraduationCap size={26} className="text-sky-400" />
-            </div>
-            <div className="flex-1">
-              {isEditing ? (
+            
+            {/* Profile Details */}
+            <div className="mt-16">
+              {!editing ? (
                 <>
-                  <input
-                    type="text"
-                    value={edu.school}
-                    onChange={(e) =>
-                      handleEducationChange(index, "school", e.target.value)
-                    }
-                    className="font-medium text-xl w-full mb-2 px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-700 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
-                  />
-                  <input
-                    type="text"
-                    value={edu.degree}
-                    onChange={(e) =>
-                      handleEducationChange(index, "degree", e.target.value)
-                    }
-                    className="text-sky-300 w-full mb-2 px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-700 focus:ring-2 focus:ring-sky-400 outline-none"
-                  />
-                  <div className="flex items-center text-sm text-sky-400 mt-2 mb-3">
-                    <Calendar size={16} className="mr-2" />
-                    <input
-                      type="text"
-                      value={edu.period}
-                      onChange={(e) =>
-                        handleEducationChange(index, "period", e.target.value)
-                      }
-                      className="px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-700 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
-                    />
+                  <h2 className="text-3xl font-bold text-white">{user.name}</h2>
+                  <p className="text-xl text-sky-400">{user.title}</p>
+                  <div className="flex items-center mt-2 text-slate-400">
+                    <MapPin size={16} className="mr-1" />
+                    <span>{user.location}</span>
                   </div>
-                  <input
-                    type="text"
-                    value={edu.focus || ""}
-                    onChange={(e) =>
-                      handleEducationChange(index, "focus", e.target.value)
-                    }
-                    className="text-sky-300 w-full mb-2 px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-700 focus:ring-2 focus:ring-sky-400 outline-none"
-                    placeholder="Focus or specialization"
-                  />
+                  <p className="mt-4">{user.bio}</p>
                 </>
               ) : (
                 <>
-                  <h4 className="font-medium text-xl text-sky-200">
-                    {edu.school}
-                  </h4>
-                  <p className="text-sky-300 text-lg">{edu.degree}</p>
-                  <div className="flex items-center text-sky-400 mt-2">
-                    <Calendar size={16} className="mr-2" />
-                    <span>{edu.period}</span>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={editableUser.name}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
+                    />
                   </div>
-                  {edu.focus && (
-                    <p className="mt-3 text-sky-300 bg-sky-700 inline-block px-4 py-1 rounded-full text-sm font-medium">
-                      Focus: {edu.focus}
-                    </p>
-                  )}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">Title</label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={editableUser.title}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">Location</label>
+                    <input
+                      type="text"
+                      name="location"
+                      value={editableUser.location}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">Bio</label>
+                    <textarea
+                      name="bio"
+                      value={editableUser.bio}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white h-24"
+                    />
+                  </div>
                 </>
               )}
             </div>
           </div>
         </div>
-      ))}
-    </div>
-  );
-
-  const AchievementsSection = () => (
-    <div className="bg-sky-800 rounded-lg shadow-md p-6 mb-8 hover:shadow-lg transition-all duration-300 border-l-4 border-sky-600">
-      <h3 className="text-2xl font-semibold text-sky-300 mb-6 flex items-center">
-        <Trophy size={22} className="mr-3 text-sky-400" />
-        Achievements
-      </h3>
-      <div className="grid grid-cols-1 gap-6">
-        {profile.achievements.map((achievement, index) => (
-          <div
-            key={index}
-            className="border border-sky-700 rounded-lg p-5 hover:shadow-md transition-all duration-300 bg-sky-700"
-          >
-            <div className="flex items-start">
-              <div className="mt-1 mr-4 p-4 bg-sky-800 rounded-lg shadow-sm">
-                {getIconComponent(achievement.icon)}
-              </div>
-              <div className="flex-1">
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      value={achievement.title}
-                      onChange={(e) =>
-                        handleAchievementChange(index, "title", e.target.value)
-                      }
-                      className="font-medium w-full mb-2 px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-600 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
-                    />
-                    <input
-                      type="text"
-                      value={achievement.description}
-                      onChange={(e) =>
-                        handleAchievementChange(
-                          index,
-                          "description",
-                          e.target.value
-                        )
-                      }
-                      className="text-sky-300 w-full mb-2 px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-600 focus:ring-2 focus:ring-sky-400 outline-none"
-                    />
-                    <div className="flex items-center text-sky-400 mt-2">
-                      <Calendar size={16} className="mr-2" />
-                      <input
-                        type="text"
-                        value={achievement.date}
-                        onChange={(e) =>
-                          handleAchievementChange(index, "date", e.target.value)
-                        }
-                        className="px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-600 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
-                      />
-                    </div>
-                    <select
-                      value={achievement.icon || "Award"}
-                      onChange={(e) =>
-                        handleAchievementChange(index, "icon", e.target.value)
-                      }
-                      className="mt-3 px-3 py-2 border-2 border-sky-500 rounded-lg bg-sky-600 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
-                    >
-                      <option value="Trophy">Trophy</option>
-                      <option value="Star">Star</option>
-                      <option value="Award">Award</option>
-                    </select>
-                  </>
-                ) : (
-                  <>
-                    <h4 className="font-medium text-xl text-sky-200">
-                      {achievement.title}
-                    </h4>
-                    <p className="text-sky-300 text-lg mt-1">
-                      {achievement.description}
-                    </p>
-                    <div className="flex items-center text-sky-400 mt-2">
-                      <Calendar size={16} className="mr-2" />
-                      <span>{achievement.date}</span>
-                    </div>
-                  </>
+        
+        {/* Profile Content */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Left Column */}
+          <div className="md:col-span-2 space-y-6">
+            {/* About */}
+            <div className="bg-slate-800 rounded-lg shadow-lg p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-white">About</h3>
+                {editing && (
+                  <Edit2 size={16} className="text-sky-400" />
                 )}
               </div>
-              {achievement.image && (
+              
+              {!editing ? (
+                <p>{user.bio}</p>
+              ) : (
+                <div className="mb-4">
+                  <textarea
+                    name="bio"
+                    value={editableUser.bio}
+                    onChange={handleChange}
+                    className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white h-32"
+                  />
+                </div>
+              )}
+            </div>
+            
+            {/* Achievements */}
+            <div className="bg-slate-800 rounded-lg shadow-lg p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-white">Achievements</h3>
+                {editing && (
+                  <button className="text-sky-400 flex items-center">
+                    <Award size={16} className="mr-1" /> Add Achievement
+                  </button>
+                )}
+              </div>
+              
+              {user.achievements.map((achievement, index) => (
+                <div key={index} className="flex mb-6 border-b border-slate-700 pb-4">
+                  <div className="flex mr-4">
+                    <img 
+                      src={achievement.image || "/api/placeholder/80/80"} 
+                      alt={achievement.title}
+                      className="w-24 h-16 object-cover rounded"
+                    />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sky-400">{achievement.title}</h4>
+                    <div className="flex items-center text-sm text-slate-400 mb-2">
+                      <Calendar size={14} className="mr-1" />
+                      <span>{new Date(achievement.date).toLocaleDateString()}</span>
+                    </div>
+                    <p>{achievement.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Education */}
+            <div className="bg-slate-800 rounded-lg shadow-lg p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-white">Education</h3>
+                {editing && (
+                  <button className="text-sky-400 flex items-center">
+                    <Book size={16} className="mr-1" /> Add Education
+                  </button>
+                )}
+              </div>
+              
+              {user.education.map((edu, index) => (
+                <div key={index} className="mb-4">
+                  <h4 className="font-bold text-sky-400">{edu.school}</h4>
+                  <p className="text-white">{edu.degree} • {edu.focus}</p>
+                  <div className="text-sm text-slate-400">{edu.period}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Right Column */}
+          <div className="space-y-6">
+            {/* Sport Info */}
+            <div className="bg-slate-800 rounded-lg shadow-lg p-6">
+              <h3 className="text-xl font-bold text-white mb-4">Sport Information</h3>
+              
+              {!editing ? (
+                <div className="space-y-3">
+                  <div className="flex items-center">
+                    <Activity size={16} className="mr-2 text-sky-400" />
+                    <span className="font-medium">Sport:</span>
+                    <span className="ml-2">{user.sport}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <User size={16} className="mr-2 text-sky-400" />
+                    <span className="font-medium">Gender:</span>
+                    <span className="ml-2">{user.gender}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Flag size={16} className="mr-2 text-sky-400" />
+                    <span className="font-medium">Birth Country:</span>
+                    <span className="ml-2">{user.birthCountry}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <MapPin size={16} className="mr-2 text-sky-400" />
+                    <span className="font-medium">Birth Place:</span>
+                    <span className="ml-2">{user.birthPlace}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Calendar size={16} className="mr-2 text-sky-400" />
+                    <span className="font-medium">Date of Birth:</span>
+                    <span className="ml-2">{new Date(user.dateOfBirth).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Sport</label>
+                    <input
+                      type="text"
+                      name="sport"
+                      value={editableUser.sport}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Gender</label>
+                    <select
+                      name="gender"
+                      value={editableUser.gender}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
+                    >
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Birth Country</label>
+                    <input
+                      type="text"
+                      name="birthCountry"
+                      value={editableUser.birthCountry}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Birth Place</label>
+                    <input
+                      type="text"
+                      name="birthPlace"
+                      value={editableUser.birthPlace}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Date of Birth</label>
+                    <input
+                      type="date"
+                      name="dateOfBirth"
+                      value={editableUser.dateOfBirth}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Physical Stats */}
+            <div className="bg-slate-800 rounded-lg shadow-lg p-6">
+              <h3 className="text-xl font-bold text-white mb-4">Physical Stats</h3>
+              
+              {!editing ? (
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="font-medium">Height:</span>
+                    <span>{user.height} cm</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Weight:</span>
+                    <span>{user.weight} kg</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Height (cm)</label>
+                    <input
+                      type="number"
+                      name="height"
+                      value={editableUser.height}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Weight (kg)</label>
+                    <input
+                      type="number"
+                      name="weight"
+                      value={editableUser.weight}
+                      onChange={handleChange}
+                      className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Contact Info */}
+            <div className="bg-slate-800 rounded-lg shadow-lg p-6">
+              <h3 className="text-xl font-bold text-white mb-4">Contact Information</h3>
+              
+              {!editing ? (
                 <div>
-                  <img
-                    src={achievement.image || "https://via.placeholder.com/150"}
-                    alt={achievement.title}
-                    className="rounded-lg shadow-sm w-40 object-cover"
-                    style={{ maxWidth: "100%", height: "auto" }}
+                  <p className="text-sky-400">{user.email}</p>
+                </div>
+              ) : (
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={editableUser.email}
+                    onChange={handleChange}
+                    className="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white"
                   />
                 </div>
               )}
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Add new achievement form (only visible in edit mode) */}
-      {isEditing && (
-        <div className="mt-8 pt-6 border-t border-sky-700">
-          <h4 className="font-medium text-xl text-sky-300 mb-4">
-            Add New Achievement
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-sky-400 mb-2 font-medium">
-                Title
-              </label>
-              <input
-                type="text"
-                value={newAchievement.title}
-                onChange={(e) =>
-                  handleNewAchievementChange("title", e.target.value)
-                }
-                className="w-full px-4 py-3 border-2 border-sky-500 rounded-lg bg-sky-700 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
-                placeholder="Achievement title"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-sky-400 mb-2 font-medium">
-                Description
-              </label>
-              <input
-                type="text"
-                value={newAchievement.description}
-                onChange={(e) =>
-                  handleNewAchievementChange("description", e.target.value)
-                }
-                className="w-full px-4 py-3 border-2 border-sky-500 rounded-lg bg-sky-700 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
-                placeholder="Achievement description"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-sky-400 mb-2 font-medium">
-                Date
-              </label>
-              <input
-                type="text"
-                value={newAchievement.date}
-                onChange={(e) =>
-                  handleNewAchievementChange("date", e.target.value)
-                }
-                className="w-full px-4 py-3 border-2 border-sky-500 rounded-lg bg-sky-700 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
-                placeholder="Achievement date"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-sky-400 mb-2 font-medium">
-                Icon
-              </label>
-              <select
-                value={newAchievement.icon}
-                onChange={(e) =>
-                  handleNewAchievementChange("icon", e.target.value)
-                }
-                className="w-full px-4 py-3 border-2 border-sky-500 rounded-lg bg-sky-700 text-sky-200 focus:ring-2 focus:ring-sky-400 outline-none"
-              >
-                <option value="Trophy">Trophy</option>
-                <option value="Star">Star</option>
-                <option value="Award">Award</option>
-              </select>
-            </div>
-            <div className="md:col-span-2">
-              <button
-                onClick={addNewAchievement}
-                className="bg-sky-600 text-white px-5 py-3 rounded-lg font-medium hover:bg-sky-500 transition-colors duration-300 shadow-md w-full flex items-center justify-center mt-2"
-              >
-                <Plus size={18} className="mr-2" /> Add Achievement
-              </button>
-            </div>
-          </div>
         </div>
-      )}
-    </div>
-  );
-
-  const SaveButton = () =>
-    isEditing && (
-      <div className="flex justify-end mb-8">
-        <button
-          onClick={() => setIsEditing(false)}
-          className="bg-sky-600 text-white px-8 py-4 rounded-lg font-medium hover:bg-sky-500 transition-colors duration-300 shadow-lg flex items-center text-lg"
-        >
-          <Save size={20} className="mr-3" /> Save Profile
-        </button>
-      </div>
-    );
-
-  // Main render
-  return (
-    <div className="bg-gradient-to-b from-sky-900 to-sky-800 min-h-screen p-6 sm:p-8">
-      <div className="max-w-4xl mx-auto">
-        <ProfileHeader />
-        <PlayerDetails />
-        <AboutSection />
-        <EducationSection />
-        <AchievementsSection />
-        <SaveButton />
-      </div>
+      </main>
     </div>
   );
 }

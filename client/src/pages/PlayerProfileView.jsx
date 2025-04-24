@@ -4,9 +4,10 @@ import {
   Flag, Activity, X, Globe, Mail, ExternalLink, Camera
 } from 'lucide-react';
 import { api } from '../api/api';
+import { useParams } from 'react-router-dom';
 
-export default function AthleteProfile() {
-  // Initial state from the provided user data
+function PlayerProfileView() {
+  const { userId } = useParams();
   const [user, setUser] = useState({
     "name": "",
     "title": "",
@@ -38,9 +39,8 @@ export default function AthleteProfile() {
   
   useEffect(() => {
     setIsLoading(true);
-    api.post("/users/details", { userId: "6808c85432f31f1dd9d04562" })
+    api.post("/users/details", { userId: userId })
       .then((response) => {
-        console.log("API response:", response.data);
         setUser(response.data);
         setEditableUser(response.data);
         setIsLoading(false);
@@ -50,7 +50,7 @@ export default function AthleteProfile() {
         setError("Failed to load user profile");
         setIsLoading(false);
       });
-  }, []);
+  }, [userId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -126,37 +126,12 @@ export default function AthleteProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-sky-950 text-sky-100 mt-16 ">
+    <div className="min-h-screen bg-sky-950 text-sky-100">
       {/* Header/Navigation */}
-      <header className=" pb-2 pt-10">
+      <header className="bg-gradient-to-r from-sky-900 to-sky-950 py-4 shadow-lg border-b border-sky-800">
         <div className="container mx-auto px-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-sky-300"></h1>
-          {!editing ? (
-            <button 
-              onClick={handleEdit}
-              className="px-4 py-2 bg-sky-800 hover:bg-sky-700 rounded-md flex items-center transition-all duration-300 text-sky-100"
-            >
-              <Edit2 size={16} className="mr-2" />
-              Edit Profile
-            </button>
-          ) : (
-            <div className="flex gap-3">
-              <button 
-                onClick={handleSave}
-                className="px-4 py-2 bg-green-700 hover:bg-green-600 rounded-md flex items-center transition-all duration-300"
-              >
-                <Save size={16} className="mr-2" />
-                Save
-              </button>
-              <button 
-                onClick={handleCancel}
-                className="px-4 py-2 bg-sky-800 hover:bg-sky-700 rounded-md flex items-center transition-all duration-300"
-              >
-                <X size={16} className="mr-2" />
-                Cancel
-              </button>
-            </div>
-          )}
+          <h1 className="text-2xl font-bold text-sky-300">Athlete Profile</h1>
+         
         </div>
       </header>
       
@@ -206,7 +181,6 @@ export default function AthleteProfile() {
                       <span>{user.location}</span>
                     </div>
                   )}
-                 
                 </>
               ) : (
                 <>
@@ -251,7 +225,6 @@ export default function AthleteProfile() {
                         className="w-full bg-sky-900 border border-sky-700 rounded-md p-2 text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300"
                       />
                     </div>
-                 
                   </div>
                 </>
               )}
@@ -586,3 +559,5 @@ export default function AthleteProfile() {
     </div>
   );
 }
+
+export default PlayerProfileView;

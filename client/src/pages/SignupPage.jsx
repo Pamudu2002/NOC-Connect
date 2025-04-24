@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { api } from "../api/api"; // Adjust the import based on your project structure
 import { useNavigate } from "react-router-dom";
+
 export default function SignupForm() {
   // States for form navigation
   const [step, setStep] = useState(1);
   const [role, setRole] = useState("athlete");
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  
   // States for user data
   const [userData, setUserData] = useState({
     name: "",
@@ -137,11 +139,6 @@ export default function SignupForm() {
     ]);
   };
 
-  // Toggle between athlete and sponsor
-  const toggleRole = () => {
-    setRole(role === "athlete" ? "sponsor" : "athlete");
-  };
-
   // Move to next step
   const nextStep = () => {
     setStep(step + 1);
@@ -177,46 +174,168 @@ export default function SignupForm() {
       });
   };
 
+  // Progress indicator
+  const renderProgressBar = () => {
+    const totalSteps = role === "athlete" ? 3 : 2;
+    return (
+      <div className="w-full mb-8">
+        <div className="flex items-center justify-between">
+          {Array.from({ length: totalSteps }).map((_, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <div 
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  step > index + 1
+                    ? "bg-sky-500 text-white"
+                    : step === index + 1
+                    ? "bg-sky-600 text-white ring-4 ring-sky-300"
+                    : "bg-sky-200 text-sky-700"
+                }`}
+              >
+                {index + 1}
+              </div>
+              <span className="text-xs mt-2 text-sky-200 font-medium">
+                {index === 0 ? "Account" : index === 1 ? "Profile" : "Achievements"}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="relative mt-2">
+          <div className="absolute top-0 h-1 bg-sky-200 w-full rounded-full"></div>
+          <div
+            className="absolute top-0 h-1 bg-sky-500 rounded-full transition-all duration-300 ease-in-out"
+            style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
+          ></div>
+        </div>
+      </div>
+    );
+  };
+
+  // Common input field component
+  const FormInput = ({ label, name, type = "text", value, onChange, required = false, placeholder = "", className = "" }) => (
+    <div className={className}>
+      <label className="block text-sky-100 font-medium mb-1 text-sm">{label} {required && <span className="text-sky-300">*</span>}</label>
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        required={required}
+        className="w-full p-3 bg-sky-800/60 border border-sky-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent text-sky-50 placeholder-sky-300/60 shadow-sm transition-all duration-200"
+      />
+    </div>
+  );
+
+  // Common textarea component
+  const FormTextarea = ({ label, name, value, onChange, required = false, placeholder = "", className = "", rows = 4 }) => (
+    <div className={className}>
+      <label className="block text-sky-100 font-medium mb-1 text-sm">{label} {required && <span className="text-sky-300">*</span>}</label>
+      <textarea
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        required={required}
+        rows={rows}
+        className="w-full p-3 bg-sky-800/60 border border-sky-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent text-sky-50 placeholder-sky-300/60 shadow-sm transition-all duration-200"
+      />
+    </div>
+  );
+
+  // Common select component
+  const FormSelect = ({ label, name, value, onChange, required = false, options, className = "" }) => (
+    <div className={className}>
+      <label className="block text-sky-100 font-medium mb-1 text-sm">{label} {required && <span className="text-sky-300">*</span>}</label>
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        required={required}
+        className="w-full p-3 bg-sky-800/60 border border-sky-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent text-sky-50 shadow-sm transition-all duration-200 appearance-none"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-sky-300">
+        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+          <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+        </svg>
+      </div>
+    </div>
+  );
+
+  // Button component
+  const Button = ({ onClick, type = "button", variant = "primary", children, className = "" }) => {
+    const variants = {
+      primary: "bg-sky-600 hover:bg-sky-500 text-white",
+      secondary: "bg-sky-700 hover:bg-sky-600 text-sky-100",
+      outline: "bg-transparent border border-sky-500 text-sky-500 hover:bg-sky-500/10",
+    };
+
+    return (
+      <button
+        type={type}
+        onClick={onClick}
+        className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm ${variants[variant]} ${className}`}
+      >
+        {children}
+      </button>
+    );
+  };
+
+  // Section title component
+  const SectionTitle = ({ children }) => (
+    <h2 className="text-2xl font-bold text-sky-100 mb-6 border-b border-sky-700 pb-2">{children}</h2>
+  );
+
+  // Card component for groups of inputs
+  const Card = ({ children, title = "", className = "" }) => (
+    <div className={`bg-sky-800/30 rounded-xl p-6 shadow-lg border border-sky-700/50 backdrop-blur-sm ${className}`}>
+      {title && <h3 className="text-lg font-semibold text-sky-300 mb-4">{title}</h3>}
+      {children}
+    </div>
+  );
+
   // Render different steps
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-sky-300 mb-6">
-              Create Your Account
-            </h2>
+            <SectionTitle>Create Your Account</SectionTitle>
 
             {/* Role Toggle */}
-            <div className="flex items-center justify-center mb-6">
+            <div className="flex flex-col items-center justify-center mb-8">
+              <p className="text-sky-200 mb-3 text-sm font-medium">I am signing up as:</p>
               <div className="relative inline-flex">
                 <div
-                  className={`w-48 h-12 flex items-center bg-blue-700 rounded-full p-1 duration-300 ease-in-out ${
-                    role === "sponsor" ? "bg-opacity-50" : "bg-opacity-50"
-                  }`}
+                  className="w-64 h-12 flex items-center bg-sky-800/60 rounded-full p-1 border border-sky-700/60 shadow-inner"
                 >
                   <div
-                    className={`bg-blue-900 w-24 h-10 rounded-full shadow-md transform duration-300 ease-in-out ${
-                      role === "sponsor" ? "translate-x-24" : ""
+                    className={`bg-sky-500 w-32 h-10 rounded-full shadow-lg transform transition-transform duration-300 ease-in-out ${
+                      role === "sponsor" ? "translate-x-32" : ""
                     }`}
                   ></div>
                 </div>
-                <div className="absolute inset-0 flex text-sm">
+                <div className="absolute inset-0 flex text-sm font-medium">
                   <div
-                    className={`w-24 flex items-center justify-center cursor-pointer ${
+                    className={`w-32 flex items-center justify-center cursor-pointer transition-colors duration-300 ${
                       role === "athlete"
-                        ? "text-sky-300 font-medium"
-                        : "text-sky-300"
+                        ? "text-white"
+                        : "text-sky-200"
                     }`}
                     onClick={() => setRole("athlete")}
                   >
                     Athlete
                   </div>
                   <div
-                    className={`w-24 flex items-center justify-center cursor-pointer ${
+                    className={`w-32 flex items-center justify-center cursor-pointer transition-colors duration-300 ${
                       role === "sponsor"
-                        ? "text-sky-300 font-medium"
-                        : "text-sky-300"
+                        ? "text-white"
+                        : "text-sky-200"
                     }`}
                     onClick={() => setRole("sponsor")}
                   >
@@ -227,79 +346,60 @@ export default function SignupForm() {
             </div>
 
             {/* Basic User Info Form */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sky-300 mb-1">Full Name</label>
-                <input
-                  type="text"
+            <Card>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormInput
+                  label="Full Name"
                   name="name"
                   value={userData.name}
                   onChange={handleUserChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                   required
+                  className="md:col-span-2"
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">Email</label>
-                <input
-                  type="email"
+                <FormInput
+                  label="Email Address"
                   name="email"
+                  type="email"
                   value={userData.email}
                   onChange={handleUserChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                   required
+                  className="md:col-span-2"
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">Password</label>
-                <input
-                  type="password"
+                <FormInput
+                  label="Password"
                   name="password"
+                  type="password"
                   value={userData.password}
                   onChange={handleUserChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                   required
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
+                <FormInput
+                  label="Confirm Password"
                   name="confirmPassword"
+                  type="password" 
                   value={userData.confirmPassword}
                   onChange={handleUserChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                   required
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">
-                  Profile Picture URL
-                </label>
-                <input
-                  type="text"
+                <FormInput
+                  label="Profile Picture URL"
                   name="profilePicture"
                   value={userData.profilePicture}
                   onChange={handleUserChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
+                  placeholder="https://example.com/image.jpg"
+                  className="md:col-span-2"
                 />
               </div>
-            </div>
+            </Card>
 
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={nextStep}
-                className="px-6 py-2 bg-sky-700 hover:bg-sky-600 text-sky-100 font-medium rounded-md transition-colors"
-              >
-                Next
-              </button>
+            <div className="flex justify-end pt-4">
+              <Button onClick={nextStep} variant="primary">
+                Continue to Profile <span className="ml-1">→</span>
+              </Button>
             </div>
           </div>
         );
@@ -308,296 +408,222 @@ export default function SignupForm() {
         return role === "athlete" ? (
           // Athlete Profile Form
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-sky-300 mb-6">
-              Athlete Profile
-            </h2>
+            <SectionTitle>Athlete Profile</SectionTitle>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sky-300 mb-1">Title</label>
-                <input
-                  type="text"
+            <Card title="Basic Information">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormInput
+                  label="Title"
                   name="title"
                   value={athleteData.title}
                   onChange={handleAthleteChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                   required
+                  placeholder="Professional Tennis Player"
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">Location</label>
-                <input
-                  type="text"
+                <FormInput
+                  label="Location"
                   name="location"
                   value={athleteData.location}
                   onChange={handleAthleteChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                   required
+                  placeholder="New York, USA"
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">Sport</label>
-                <input
-                  type="text"
+                <FormInput
+                  label="Sport"
                   name="sport"
                   value={athleteData.sport}
                   onChange={handleAthleteChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                   required
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">Date of Birth</label>
-                <input
-                  type="date"
+                <FormInput
+                  label="Date of Birth"
                   name="dateOfBirth"
+                  type="date"
                   value={athleteData.dateOfBirth}
                   onChange={handleAthleteChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                   required
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">Gender</label>
-                <select
+                <FormSelect
+                  label="Gender"
                   name="gender"
                   value={athleteData.gender}
                   onChange={handleAthleteChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
-                >
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sky-300 mb-1">Birth Place</label>
-                <input
-                  type="text"
-                  name="birthPlace"
-                  value={athleteData.birthPlace}
-                  onChange={handleAthleteChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
+                  options={[
+                    { value: "male", label: "Male" },
+                    { value: "female", label: "Female" },
+                    { value: "other", label: "Other" },
+                  ]}
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">Birth Country</label>
-                <input
-                  type="text"
-                  name="birthCountry"
-                  value={athleteData.birthCountry}
-                  onChange={handleAthleteChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sky-300 mb-1">Nationality</label>
-                <input
-                  type="text"
+                <FormInput
+                  label="Nationality"
                   name="nationality"
                   value={athleteData.nationality}
                   onChange={handleAthleteChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">Height (cm)</label>
-                <input
-                  type="number"
+                <FormInput
+                  label="Birth Place"
+                  name="birthPlace"
+                  value={athleteData.birthPlace}
+                  onChange={handleAthleteChange}
+                />
+
+                <FormInput
+                  label="Birth Country"
+                  name="birthCountry"
+                  value={athleteData.birthCountry}
+                  onChange={handleAthleteChange}
+                />
+
+                <FormInput
+                  label="Height (cm)"
                   name="height"
+                  type="number"
                   value={athleteData.height}
                   onChange={handleAthleteChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">Weight (kg)</label>
-                <input
-                  type="number"
+                <FormInput
+                  label="Weight (kg)"
                   name="weight"
+                  type="number"
                   value={athleteData.weight}
                   onChange={handleAthleteChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
+                />
+
+                <FormTextarea
+                  label="Bio"
+                  name="bio"
+                  value={athleteData.bio}
+                  onChange={handleAthleteChange}
+                  required
+                  placeholder="Tell sponsors about yourself, your achievements, and goals..."
+                  className="md:col-span-2"
+                  rows={5}
                 />
               </div>
-            </div>
+            </Card>
 
-            <div className="col-span-2">
-              <label className="block text-sky-300 mb-1">Bio</label>
-              <textarea
-                name="bio"
-                value={athleteData.bio}
-                onChange={handleAthleteChange}
-                className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100 h-32"
-                required
-              ></textarea>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-sky-300">
-                  Education
-                </h3>
-                <button
-                  type="button"
-                  onClick={addEducation}
-                  className="px-3 py-1 bg-sky-800 hover:bg-sky-700 text-sky-100 text-sm rounded"
-                >
-                  + Add Education
-                </button>
-              </div>
-
+            <Card title="Education" className="space-y-6">
               {athleteData.education.map((edu, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-sky-800 bg-opacity-50 rounded-lg space-y-3"
+                  className="p-4 bg-sky-700/40 rounded-lg space-y-4 border border-sky-600/30"
                 >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sky-300 text-sm mb-1">
-                        School
-                      </label>
-                      <input
-                        type="text"
-                        name="school"
-                        value={edu.school}
-                        onChange={(e) => handleEducationChange(index, e)}
-                        className="w-full p-2 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100 text-sm"
-                      />
-                    </div>
+                  <h4 className="text-sm font-medium text-sky-200 mb-3 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14v7" />
+                    </svg>
+                    Education #{index + 1}
+                  </h4>
 
-                    <div>
-                      <label className="block text-sky-300 text-sm mb-1">
-                        Degree
-                      </label>
-                      <input
-                        type="text"
-                        name="degree"
-                        value={edu.degree}
-                        onChange={(e) => handleEducationChange(index, e)}
-                        className="w-full p-2 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100 text-sm"
-                      />
-                    </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormInput
+                      label="School"
+                      name="school"
+                      value={edu.school}
+                      onChange={(e) => handleEducationChange(index, e)}
+                      placeholder="University name"
+                    />
 
-                    <div>
-                      <label className="block text-sky-300 text-sm mb-1">
-                        Period
-                      </label>
-                      <input
-                        type="text"
-                        name="period"
-                        value={edu.period}
-                        placeholder="e.g. 2018-2022"
-                        onChange={(e) => handleEducationChange(index, e)}
-                        className="w-full p-2 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100 text-sm"
-                      />
-                    </div>
+                    <FormInput
+                      label="Degree"
+                      name="degree"
+                      value={edu.degree}
+                      onChange={(e) => handleEducationChange(index, e)}
+                      placeholder="Bachelor of Science"
+                    />
 
-                    <div>
-                      <label className="block text-sky-300 text-sm mb-1">
-                        Focus
-                      </label>
-                      <input
-                        type="text"
-                        name="focus"
-                        value={edu.focus}
-                        onChange={(e) => handleEducationChange(index, e)}
-                        className="w-full p-2 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100 text-sm"
-                      />
-                    </div>
+                    <FormInput
+                      label="Period"
+                      name="period"
+                      value={edu.period}
+                      placeholder="e.g. 2018-2022"
+                      onChange={(e) => handleEducationChange(index, e)}
+                    />
+
+                    <FormInput
+                      label="Focus/Major"
+                      name="focus"
+                      value={edu.focus}
+                      onChange={(e) => handleEducationChange(index, e)}
+                      placeholder="Sports Management"
+                    />
                   </div>
                 </div>
               ))}
-            </div>
 
-            <div className="flex justify-between">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="px-6 py-2 bg-sky-700 hover:bg-sky-600 text-sky-100 font-medium rounded-md transition-colors"
+              <Button 
+                onClick={addEducation} 
+                variant="outline" 
+                className="w-full mt-2 flex items-center justify-center"
               >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={nextStep}
-                className="px-6 py-2 bg-sky-700 hover:bg-sky-600 text-sky-100 font-medium rounded-md transition-colors"
-              >
-                Next
-              </button>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add Education
+              </Button>
+            </Card>
+
+            <div className="flex justify-between pt-4">
+              <Button onClick={prevStep} variant="secondary">
+                <span className="mr-1">←</span> Back
+              </Button>
+              <Button onClick={nextStep} variant="primary">
+                Continue to Achievements <span className="ml-1">→</span>
+              </Button>
             </div>
           </div>
         ) : (
           // Sponsor Profile Form
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-sky-300 mb-6">
-              Sponsor Profile
-            </h2>
+            <SectionTitle>Sponsor Profile</SectionTitle>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sky-300 mb-1">Company Name</label>
-                <input
-                  type="text"
+            <Card>
+              <div className="space-y-6">
+                <FormInput
+                  label="Company Name"
                   name="companyName"
                   value={sponsorData.companyName}
                   onChange={handleSponsorChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
                   required
+                  placeholder="Your company name"
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">
-                  Sponsorship Budget ($)
-                </label>
-                <input
-                  type="number"
+                <FormInput
+                  label="Sponsorship Budget ($)"
                   name="sponsorshipBudget"
+                  type="number"
                   value={sponsorData.sponsorshipBudget}
                   onChange={handleSponsorChange}
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
+                  placeholder="Annual budget for sponsorships"
                 />
-              </div>
 
-              <div>
-                <label className="block text-sky-300 mb-1">
-                  Interests (comma-separated)
-                </label>
-                <textarea
+                <FormTextarea
+                  label="Interests (comma-separated)"
                   name="interests"
                   value={sponsorData.interests.join(", ")}
                   onChange={handleInterestsChange}
                   placeholder="e.g. Football, Basketball, Swimming"
-                  className="w-full p-3 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100 h-32"
-                ></textarea>
+                  rows={4}
+                />
               </div>
-            </div>
+            </Card>
 
-            <div className="flex justify-between">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="px-6 py-2 bg-sky-700 hover:bg-sky-600 text-sky-100 font-medium rounded-md transition-colors"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="px-6 py-2 bg-blue-700 hover:bg-blue-600 text-sky-100 font-medium rounded-md transition-colors"
-              >
-                Complete Signup
-              </button>
+            <div className="flex justify-between pt-4">
+              <Button onClick={prevStep} variant="secondary">
+                <span className="mr-1">←</span> Back
+              </Button>
+              <Button onClick={handleSubmit} variant="primary">
+                Complete Registration
+              </Button>
             </div>
           </div>
         );
@@ -605,126 +631,96 @@ export default function SignupForm() {
       case 3:
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-sky-300 mb-6">
-              Achievements (Optional)
-            </h2>
+            <SectionTitle>Achievements</SectionTitle>
+            <p className="text-sky-200 mb-6">Showcase your accomplishments to attract potential sponsors. These are optional but highly recommended.</p>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {achievements.map((achievement, index) => (
-                <div
-                  key={index}
-                  className="p-4 bg-sky-800 bg-opacity-50 rounded-lg space-y-3"
+                <Card 
+                  key={index} 
+                  className="border border-sky-600/30"
                 >
-                  <h3 className="text-lg font-medium text-sky-300">
-                    Achievement #{index + 1}
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sky-300 text-sm mb-1">
-                        Title
-                      </label>
-                      <input
-                        type="text"
-                        name="title"
-                        value={achievement.title}
-                        onChange={(e) => handleAchievementChange(index, e)}
-                        className="w-full p-2 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sky-300 text-sm mb-1">
-                        Subtitle
-                      </label>
-                      <input
-                        type="text"
-                        name="subtitle"
-                        value={achievement.subtitle}
-                        onChange={(e) => handleAchievementChange(index, e)}
-                        className="w-full p-2 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sky-300 text-sm mb-1">
-                        Date
-                      </label>
-                      <input
-                        type="date"
-                        name="date"
-                        value={achievement.date}
-                        onChange={(e) => handleAchievementChange(index, e)}
-                        className="w-full p-2 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
-                      />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="block text-sky-300 text-sm mb-1">
-                        Description
-                      </label>
-                      <textarea
-                        name="description"
-                        value={achievement.description}
-                        onChange={(e) => handleAchievementChange(index, e)}
-                        className="w-full p-2 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100 h-20"
-                      ></textarea>
-                    </div>
-
-                    <div>
-                      <label className="block text-sky-300 text-sm mb-1">
-                        Icon
-                      </label>
-                      <input
-                        type="text"
-                        name="icon"
-                        value={achievement.icon}
-                        onChange={(e) => handleAchievementChange(index, e)}
-                        placeholder="e.g. trophy, medal, star"
-                        className="w-full p-2 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100 placeholder:text-sky-100"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sky-300 text-sm mb-1">
-                        Image URL
-                      </label>
-                      <input
-                        type="text"
-                        name="image"
-                        value={achievement.image}
-                        onChange={(e) => handleAchievementChange(index, e)}
-                        className="w-full p-2 bg-sky-800 border border-sky-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-1000 text-sky-100"
-                      />
-                    </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-medium text-sky-300 flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      </svg>
+                      Achievement #{index + 1}
+                    </h3>
                   </div>
-                </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormInput
+                      label="Title"
+                      name="title"
+                      value={achievement.title}
+                      onChange={(e) => handleAchievementChange(index, e)}
+                      placeholder="e.g. National Championship"
+                    />
+
+                    <FormInput
+                      label="Subtitle"
+                      name="subtitle"
+                      value={achievement.subtitle}
+                      onChange={(e) => handleAchievementChange(index, e)}
+                      placeholder="e.g. First Place"
+                    />
+
+                    <FormInput
+                      label="Date"
+                      name="date"
+                      type="date"
+                      value={achievement.date}
+                      onChange={(e) => handleAchievementChange(index, e)}
+                    />
+
+                    <FormInput
+                      label="Icon"
+                      name="icon"
+                      value={achievement.icon}
+                      onChange={(e) => handleAchievementChange(index, e)}
+                      placeholder="e.g. trophy, medal, star"
+                    />
+
+                    <FormInput
+                      label="Image URL"
+                      name="image"
+                      value={achievement.image}
+                      onChange={(e) => handleAchievementChange(index, e)}
+                      placeholder="https://example.com/trophy.jpg"
+                    />
+
+                    <FormTextarea
+                      label="Description"
+                      name="description"
+                      value={achievement.description}
+                      onChange={(e) => handleAchievementChange(index, e)}
+                      placeholder="Describe your achievement..."
+                      className="md:col-span-2"
+                    />
+                  </div>
+                </Card>
               ))}
 
-              <button
-                type="button"
-                onClick={addAchievement}
-                className="w-full p-2 bg-sky-800 hover:bg-sky-700 text-sky-100 font-medium rounded-md transition-colors"
+              <Button 
+                onClick={addAchievement} 
+                variant="outline" 
+                className="w-full flex items-center justify-center"
               >
-                + Add Another Achievement
-              </button>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add Another Achievement
+              </Button>
             </div>
 
-            <div className="flex justify-between">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="px-6 py-2 bg-sky-700 hover:bg-sky-600 text-sky-100 font-medium rounded-md transition-colors"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="px-6 py-2 bg-blue-700 hover:bg-blue-600 text-sky-100 font-medium rounded-md transition-colors"
-              >
-                Complete Signup
-              </button>
+            <div className="flex justify-between pt-4">
+              <Button onClick={prevStep} variant="secondary">
+                <span className="mr-1">←</span> Back
+              </Button>
+              <Button onClick={handleSubmit} variant="primary">
+                Complete Registration
+              </Button>
             </div>
           </div>
         );
@@ -735,9 +731,10 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-900 to-sky-900 flex items-center justify-center p-4">
-      <div className="max-w-3xl w-full bg-sky-900 bg-opacity-80 rounded-xl shadow-2xl overflow-hidden">
-        <div className="p-8">
+    <div className="min-h-screen bg-gradient-to-br from-sky-900 via-sky-800 to-sky-900 flex items-center justify-center p-4">
+      <div className="max-w-4xl w-full bg-sky-900/80 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-sm border border-sky-700/50">
+        <div className="p-8 md:p-10">
+          {renderProgressBar()}
           <form>{renderStep()}</form>
         </div>
       </div>

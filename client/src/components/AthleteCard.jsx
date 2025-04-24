@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Medal, Trophy, Award, Star } from "lucide-react";
 import { api } from "../api/api";
+import { Link } from "react-router-dom"; // Assuming you're using React Router
 
 const AthleteCard = ({ athlete }) => {
   const [athleteAchievements, setAthleteAchievements] = useState([]);
@@ -126,7 +127,7 @@ const AthleteCard = ({ athlete }) => {
 
       {/* Action buttons - now in a separate div outside of content area */}
       <div className="flex p-4 bg-sky-900 border-t border-sky-800 ">
-        <button className="flex-1 flex items-center justify-center gap-2 bg-sky-600 text-white font-medium py-2 px-4 rounded-xl hover:bg-sky-500 transition-colors duration-300 shadow-md">
+        <Link to={`/playerView/${athlete.userId._id}`} className="flex-1 flex items-center justify-center gap-2 bg-sky-600 text-white font-medium py-2 px-4 rounded-xl hover:bg-sky-500 transition-colors duration-300 shadow-md">
           <svg
             className="w-4 h-4"
             fill="none"
@@ -147,7 +148,7 @@ const AthleteCard = ({ athlete }) => {
             />
           </svg>
           View Details
-        </button>
+        </Link>
       </div>
     </div>
   );

@@ -203,6 +203,7 @@ function HomePage() {
               Volunteer
             </motion.div>
             </Link>
+            <Link to="/signup">
             <motion.button 
               className="px-4 py-2 rounded-full border border-white hover:bg-white hover:text-sky-900 transition-colors"
               whileHover={{ scale: 1.05, backgroundColor: '#ffffff', color: '#0c4a6e' }}
@@ -210,7 +211,11 @@ function HomePage() {
             >
               Sign Up
             </motion.button>
+            </Link>
+          
           </nav>
+
+          
           
           {/* Mobile Menu Button */}
           <motion.button 
@@ -367,9 +372,9 @@ function HomePage() {
               <Link to="/athletes" className="px-6 py-3 rounded-full bg-sky-500 hover:bg-sky-400 transition-colors text-white font-bold text-lg">
                 Get Started
               </Link>
-              <button className="px-6 py-3 rounded-full border-2 border-white hover:bg-white hover:text-sky-900 transition-colors font-bold text-lg">
+              <Link to="/signin" className="px-6 py-3 rounded-full border-2 border-white hover:bg-white hover:text-sky-900 transition-colors font-bold text-lg">
                 Sign In
-              </button>
+              </Link>
             </div>
           </div>
         </div>

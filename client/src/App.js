@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import AthletesList from "./pages/SponsorDashboard";
 import PlayerProfile from "./pages/PlayerProfile";
+import PlayerProfileView from "./pages/PlayerProfileView";
 import SignupForm from "./pages/SignupPage";
 import LoginForm from "./pages/LoginPage";
 function App() {
@@ -20,6 +21,8 @@ function App() {
 
         <Route path="/" element={<HomePage setLoading={setLoading} />} />
         <Route path="/volunteer" element={<VolunteerPage />} />
+        <Route path="/signin" element={<LoginForm />} />
+        <Route path="/signup" element={<SignupForm />} />
 
         {/* All Other Pages with Navbar */}
         <Route
@@ -29,18 +32,15 @@ function App() {
               {!loading && <Navbar />} {/* Hide Navbar while loading */}
               <Routes>
                 
-                <Route
-                  path="/volunteer"
-                  element={<VolunteerPage setLoading={setLoading} />}
-                />
            
                 <Route
                   path="/athletes"
                   element={<AthletesList setLoading={setLoading} loading={loading} />}
                 />
                 <Route path="/player" element={<PlayerProfile />} />
-                <Route path="/signup" element={<SignupForm />} />
-                <Route path="/signin" element={<LoginForm />} />
+                <Route path="/playerView/:userId" element={<PlayerProfileView />} />
+                
+              
               </Routes>
             </div>
           }

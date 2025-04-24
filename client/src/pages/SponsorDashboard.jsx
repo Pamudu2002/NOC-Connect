@@ -56,7 +56,7 @@ const AthletesList = () => {
   };
 
   return (
-    <div className="mx-auto p-4 bg-sky-950">
+    <div className="mx-auto p-4 bg-sky-950 mt-14">
       <div className="top-0 z-10 bg-sky-900 shadow-lg pt-4 pb-4 px-4 rounded-b-lg">
         <h1 className="text-3xl font-bold text-sky-50 mb-6">
           Athletes Directory
@@ -109,7 +109,7 @@ const AthletesList = () => {
                 <input
                   type="text"
                   id="name-search"
-                  className="block w-full pl-10 pr-3 py-2 border border-sky-600 rounded-lg bg-sky-800 text-sky-100 placeholder-sky-400"
+                  className="block w-full pl-10 pr-3 py-2 border border-sky-600 rounded-lg bg-sky-800 text-sky-100 placeholder-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400 focus:border-sky-400"
                   placeholder="Type athlete name..."
                   value={nameSearchTerm}
                   onChange={(e) => setNameSearchTerm(e.target.value)}

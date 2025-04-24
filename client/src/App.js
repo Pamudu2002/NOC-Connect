@@ -7,41 +7,55 @@ import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AthleteCard from "./components/AthleteCard";
 import AthletesList from "./pages/SponsorDashboard";
+import PlayerProfile from "./pages/PlayerProfile";
 
 function App() {
-  // const [loading, setLoading] = useState(false); // State to manage loading overlay
-  // return (
-  //   <BrowserRouter>
-  //     {loading && <Loader />} {/* Show loading overlay */}
-  //     <Routes>
-  //       {/* Home Page without Navbar */}
-
-  //       <Route path="/" element={<HomePage setLoading={setLoading} />} />
-  //       <Route path="/volunteer" element={<VolunteerPage />} />
-
-  //       {/* All Other Pages with Navbar */}
-  //       <Route
-  //         path="/*"
-  //         element={
-  //           <div className="App bg-white">
-  //             {!loading && <Navbar />} {/* Hide Navbar while loading */}
-  //             <Routes>
-  //               <Route
-  //                 path="/sampleRoute"
-  //                 element={
-  //                   <HomePage setLoading={setLoading} loading={loading} />
-  //                 }
-  //               />
-  //             </Routes>
-  //           </div>
-  //         }
-  //       />
-        
-  //     </Routes>
-  //   </BrowserRouter>
+  const [loading, setLoading] = useState(false); // State to manage loading overlay
   return (
-    <AthletesList/>
+    <BrowserRouter>
+      {loading && <Loader />} {/* Show loading overlay */}
+      <Routes>
+        {/* Home Page without Navbar */}
+
+        <Route path="/" element={<HomePage setLoading={setLoading} />} />
+        <Route path="/volunteer" element={<VolunteerPage />} />
+
+        {/* All Other Pages with Navbar */}
+        <Route
+          path="/*"
+          element={
+            <div className="App bg-white">
+              {!loading && <Navbar />} {/* Hide Navbar while loading */}
+              <Routes>
+                <Route
+                  path="/sampleRoute"
+                  element={
+                    <HomePage setLoading={setLoading} loading={loading} />
+                  }
+                />
+                <Route
+                  path="/volunteer"
+                  element={<VolunteerPage setLoading={setLoading} />}
+                />
+                <Route
+                  path="/athlete/:id"
+                  element={<AthleteCard setLoading={setLoading} />}
+                />
+                <Route
+                  path="/volunteer/:id"
+                  element={<VolunteerCard setLoading={setLoading} />}
+                />
+                <Route
+                  path="/athletes"
+                  element={<AthletesList setLoading={setLoading} />}
+                />
+                <Route path="/player" element={<PlayerProfile />} />
+              </Routes>
+            </div>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
 export default App;

@@ -7,7 +7,9 @@ import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AthleteCard from "./components/AthleteCard";
 import AthletesList from "./pages/SponsorDashboard";
-
+import PlayerProfile from "./pages/PlayerProfile";
+import SignupForm from "./pages/SignupPage";
+import LoginForm from "./pages/LoginPage";
 function App() {
   const [loading, setLoading] = useState(false); // State to manage loading overlay
   return (
@@ -26,20 +28,25 @@ function App() {
             <div className="App bg-white">
               {!loading && <Navbar />} {/* Hide Navbar while loading */}
               <Routes>
+                
+                <Route
+                  path="/volunteer"
+                  element={<VolunteerPage setLoading={setLoading} />}
+                />
+           
                 <Route
                   path="/athletes"
-                  element={
-                    <AthletesList setLoading={setLoading} loading={loading} />
-                  }
+                  <AthletesList setLoading={setLoading} loading={loading} />
                 />
+                <Route path="/player" element={<PlayerProfile />} />
+                <Route path="/signup" element={<SignupForm />} />
+                <Route path="/signin" element={<LoginForm />} />
               </Routes>
             </div>
           }
         />
-        
       </Routes>
     </BrowserRouter>
   );
 }
-
 export default App;

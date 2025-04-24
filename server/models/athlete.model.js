@@ -7,11 +7,18 @@ const athleteSchema = new mongoose.Schema(
       ref: "users",
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+    },
+    location: {
+      type: String,
+      required: true,
+    },
     sport: {
       type: String,
       required: true,
     },
-    achievements: [String],
     bio: {
       type: String,
       required: true,
@@ -20,6 +27,14 @@ const athleteSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    education: [
+      {
+        school: String,
+        degree: String,
+        period: String,
+        focus: String,
+      },
+    ],
     gender: {
       type: String,
       enum: ["male", "female", "other"],

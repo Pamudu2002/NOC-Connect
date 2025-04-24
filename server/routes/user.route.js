@@ -1,18 +1,186 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user.model");
+const athleteModel = require("../models/athlete.model");
+const sponsorModel = require("../models/sponsor.model");
+const achievementModel = require("../models/achivement.model");
+
 
 router.post("/register", async (req, res) => {
+  const { user, profile, achievements } = req.body;
+
   try {
-    const { name, email, password, role, profilePicture } = req.body;
-    const newUser = new User({ name, email, password, role, profilePicture });
+    // Check if user with the same email exists
+    const existingUser = await User.findOne({ email: user.email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    user.password = await bcrypt.hash(user.password, 10);
+
+    const newUser = new User(user);
     await newUser.save();
-    res.status(201).json(newUser);
+
+    if (profile && user.role === "athlete") {
+      const newProfile = new athleteModel({ ...profile, userId: newUser._id });
+      await newProfile.save();
+    }
+
+    if (profile && user.role === "sponsor") {
+      const newProfile = new sponsorModel({ ...profile, user: newUser._id }); // Changed to 'user' to match schema
+      await newProfile.save();
+    }
+
+    if (achievements && achievements.length > 0) {
+      const newAchievements = achievements.map((achievement) => ({
+        ...achievement,
+        userId: newUser._id,
+      }));
+      await achievementModel.insertMany(newAchievements);
+    }
+
+    return res.status(201).json({ message: "User registered successfully" });
+  
   } catch (error) {
     console.error("Error registering user:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to register user. Please try again later." });
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: error.message });
+    }
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+    switch (user.role) {
+      case "athlete":
+        const NOCAthleteToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        res.cookie("NOCAthleteToken", NOCAthleteToken, {
+          httpOnly: true,
+          sameSite: "Strict",
+        }); 
+        return res.status(200).json({ token: NOCAthleteToken });
+      case "sponsor":
+        const NOCSponsorToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        res.cookie("NOCSponsorToken", NOCSponsorToken, {
+          httpOnly: true,
+          sameSite: "Strict",
+        });
+        return res.status(200).json({ token: NOCSponsorToken });
+      case "admin":
+        const NOCAdminToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        res.cookie("NOCAdminToken", NOCAdminToken, {
+          httpOnly: true,
+          sameSite: "Strict",
+        });
+        return res.status(200).json({ token: NOCAdminToken });
+      default:
+        return res.status(400).json({ message: "Invalid user role" });
+    }
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+router.post('/details', async (req, res) => {
+  try {
+
+    const { userId } = req.body;
+    const user = await User.findById(userId);     
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.role === "athlete") {
+      const athlete = await athleteModel.findOne({ userId : userId });
+      if (!athlete) {
+        return res.status(404).json({ message: "Athlete profile not found" });
+      }
+      const achievements = await achievementModel.find({ userId: userId });
+      if (!achievements) {
+        return res.status(404).json({ message: "Achievements not found" });
+      }
+      const details = {
+        ...user._doc,
+        ...athlete._doc,
+        achievements: achievements.map(achievement => ({
+          title: achievement.title,
+          subtitle: achievement.subtitle,
+          description: achievement.description,
+          date: achievement.date,
+          icon: achievement.icon,
+          image: achievement.image
+        }))
+      };
+      return res.status(200).json(details);
+    }
+    if (user.role === "sponsor") {
+      const sponsor = await sponsorModel.findOne({ user: userId });
+      if (!sponsor) {
+        return res.status(404).json({ message: "Sponsor profile not found" });
+      }
+      const details = {
+        ...user._doc,
+        ...sponsor._doc
+      };
+      return res.status(200).json(details);
+    }
+    return res.status(400).json({ message: "Invalid user role" });
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post('/update', async (req, res) => {
+  try {
+    const { userId, user, profile } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(userId, user, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (profile) {
+      await athleteModel.findOneAndUpdate({ userId }, profile, { new: true });
+    }
+    return res.status(200).json({ message: "User updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post('/achievements', async (req, res) => {
+  try {
+    const { userId, achievements } = req.body;
+    if (!achievements || achievements.length === 0) {
+      return res.status(400).json({ message: "No achievements provided" });
+    }
+    const newAchievements = achievements.map((achievement) => ({
+      ...achievement,
+      userId: userId,
+    }));
+    await achievementModel.insertMany(newAchievements);
+    return res.status(201).json({ message: "Achievements added successfully" });
+  } catch (error) {
+    console.error("Error adding achievements:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 

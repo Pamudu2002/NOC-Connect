@@ -6,10 +6,6 @@ const achievementSchema = new mongoose.Schema(
       ref: "users",
       required: true,
     },
-    sport: {
-      type: String,
-      required: true,
-    },
     title: {
       type: String,
       required: true,
@@ -20,6 +16,10 @@ const achievementSchema = new mongoose.Schema(
     },
     date: {
       type: Date,
+      required: true,
+    },
+    icon:{
+      type: String,
       required: true,
     },
     image: {

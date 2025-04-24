@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Achievement = require('../models/achievement.model');
+const Achievement = require('../models/achivement.model.js');
 
 router.get("/:userId", async (req, res) => {
   try {

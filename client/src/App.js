@@ -2,10 +2,10 @@ import HomePage from "./pages/HomePage";
 import VolunteerPage from "./pages/VolunteerPage";
 import Navbar from "./components/Navbar";
 import Loader from "./components/Loader";
-import VolunteerCard from "./components/VolunteerCard";
+
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AthleteCard from "./components/AthleteCard";
+
 import AthletesList from "./pages/SponsorDashboard";
 import PlayerProfile from "./pages/PlayerProfile";
 import SignupForm from "./pages/SignupPage";
@@ -36,7 +36,7 @@ function App() {
            
                 <Route
                   path="/athletes"
-                  <AthletesList setLoading={setLoading} loading={loading} />
+                  element={<AthletesList setLoading={setLoading} loading={loading} />}
                 />
                 <Route path="/player" element={<PlayerProfile />} />
                 <Route path="/signup" element={<SignupForm />} />

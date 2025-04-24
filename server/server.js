@@ -6,6 +6,8 @@ const dotenv = require('dotenv');
 const eventRoute = require('./routes/event.route');
 const athleteRoute = require('./routes/athlete.route');
 const userRoute = require('./routes/user.route')
+const volunteerRoute = require('./routes/volunteer.route');
+
 
 
 dotenv.config();
@@ -28,6 +30,7 @@ app.use(cors({
 app.use('/api/events', eventRoute);
 app.use('/api/athletes', athleteRoute);
 app.use('/api/users', userRoute);
+app.use('/api/volunteers', volunteerRoute);
 
 
 app.get('/', (req, res) => {

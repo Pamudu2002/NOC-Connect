@@ -23,8 +23,11 @@ const volunteerSchema = new mongoose.Schema({
   },
   experience: {
     type: String,
-    required: true,
     default: 'No experience',
+  },
+  eventName: {
+    type: String,
+    required: true,
   },
 }, { timestamps: true });
 

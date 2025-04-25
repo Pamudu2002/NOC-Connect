@@ -47,8 +47,8 @@ export default function LoginForm() {
         console.log("Login successful:", response.data);
         setTimeout(() => {
           setLoading(false);
-          navigate("/player"); // Redirect to home page after successful login
-          // setLoginData({ email: "", password: "" });
+          navigate("/athletes"); // Redirect to home page after successful login
+          setLoginData({ email: "", password: "" }); // Clear login data after successful login
         }, 1000);
       })
       .catch((error) => {

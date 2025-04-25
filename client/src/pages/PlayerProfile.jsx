@@ -74,7 +74,7 @@ export default function AthleteProfile() {
   useEffect(() => {
     setIsLoading(true);
     api
-    .get("/users/logged/athlete", { withCredentials: true }).then((response) => {
+    .get("/users/logged", { withCredentials: true }).then((response) => {
       
     api
       .post("/users/details", { userId: response.data._id })

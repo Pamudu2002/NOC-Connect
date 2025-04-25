@@ -66,40 +66,22 @@ router.post("/login", async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    switch (user.role) {
-      case "athlete":
-        const NOCAthleteToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        res.cookie("NOCAthleteToken", NOCAthleteToken, {
-          httpOnly: true,
-          sameSite: "Strict",
-        }); 
-        return res.status(200).json({ token: NOCAthleteToken });
-      case "sponsor":
-        const NOCSponsorToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        res.cookie("NOCSponsorToken", NOCSponsorToken, {
-          httpOnly: true,
-          sameSite: "Strict",
-        });
-        return res.status(200).json({ token: NOCSponsorToken });
-      case "admin":
-        const NOCAdminToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        res.cookie("NOCAdminToken", NOCAdminToken, {
-          httpOnly: true,
-          sameSite: "Strict",
-        });
-        return res.status(200).json({ token: NOCAdminToken });
-      default:
-        return res.status(400).json({ message: "Invalid user role" });
-    }
+    const NOCTOKEN = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.cookie("NOCTOKEN", NOCTOKEN, {
+      httpOnly: true,
+    });
+    return res.status(200).json({ message: "Login successful", user });
   } catch (error) {
     console.error("Error logging in user:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 });
 
-router.get('/logged/admin', async (req, res) => {
+router.get('/logged', async (req, res) => {
   try {
-    const token = req.cookies.NOCAdminToken;
+    const token = req.cookies.NOCTOKEN;
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -115,41 +97,6 @@ router.get('/logged/admin', async (req, res) => {
   }
 });
 
-router.get('/logged/sponsor', async (req, res) => {
-  try {
-    const token = req.cookies.NOCSponsorToken;
-    if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    return res.status(200).json(user);
-  } catch (error) {
-    console.error("Error fetching logged user:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.get('/logged/athlete', async (req, res) => {
-  try {
-    const token = req.cookies.NOCAthleteToken;
-    if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    return res.status(200).json(user);
-  } catch (error) {
-    console.error("Error fetching logged user:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-});
 
 router.post('/details', async (req, res) => {
   try {
@@ -262,6 +209,16 @@ router.post('/achievements', async (req, res) => {
     return res.status(201).json({ message: "Achievements added successfully" });
   } catch (error) {
     console.error("Error adding achievements:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get('/logout', async (req, res) => {
+  try {
+    res.clearCookie("NOCTOKEN", { httpOnly: true });
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Error logging out:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 });

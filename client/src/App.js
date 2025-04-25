@@ -11,6 +11,7 @@ import PlayerProfile from "./pages/PlayerProfile";
 import PlayerProfileView from "./pages/PlayerProfileView";
 import SignupForm from "./pages/SignupPage";
 import LoginForm from "./pages/LoginPage";
+import AdminPage from "./pages/AdminPage";
 function App() {
   const [loading, setLoading] = useState(false); // State to manage loading overlay
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/volunteer" element={<VolunteerPage />} />
         <Route path="/signin" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
+        <Route path="/admin" element={<AdminPage />} />
 
         {/* All Other Pages with Navbar */}
         <Route

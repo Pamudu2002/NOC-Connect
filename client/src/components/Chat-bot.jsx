@@ -12,22 +12,23 @@ export default function ChatButton({currentPage}) {
   const chatContainerRef = useRef(null);
   const chatModalRef = useRef(null);
   
-  // State to store the current page URL
-  // const [currentPage, setCurrentPage] = useState("");
+  // Add a new state to track if user has interacted
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
   
   // State to track whether suggestions should be shown
   // Initial state is true so suggestions appear with the first bot message
   const [showSuggestions, setShowSuggestions] = useState(true);
   
   // Object mapping page URLs to their specific suggestions
-  // This can be expanded with more pages and suggestions as needed
   const pageSuggestions = {
-    "Home page": ["Want to learn how to sponsor an athlete? I can guide you!", "Looking to volunteer for upcoming events? Here's how to get started."],
-    "/signup": ["Need help choosing the right account type? I can explain the options.", "Facing issues with the sign-up form? Let me walk you through it."],
-    "/signin": ["Forgot your password? I can help you recover it.", "Having trouble logging in? Let's troubleshoot together."],
-    "/volunteer": ["Want to know the benefits of volunteering with NOC Sri Lanka?", "Need help submitting your volunteer application?"],
-    "/aboutus": ["Curious about our mission and vision? I can summarize it for you.", "Want to know how NOC Sri Lanka supports athletes nationwide?"],
-    // Add more pages and their suggestions as needed
+    "Home page": ["Want to learn how to sponsor an athlete? ", "Looking to volunteer for upcoming events? "],
+    "Login page": ["I can't log in to my account, what should I do?", "Can I switch between sponsor and player accounts?"],
+    "Admin page": ["How do I approve a new player registration?", "Where can I manage sponsor requests?"],
+    "Player profile page": ["How can I update my sport or achievements?", "Where do I upload my latest competition photos?"],
+    "Player profile view page": ["How can I sponsor this player?", "Can I contact this player or their coach?"],
+    "signup page":["Need help choosing the right account type?","Facing issues with the sign-up form?"],
+    "Sponsor dashboard page":["Where can I see the players I've already sponsored?","How do I make a new sponsorship contribution?"],
+    "Volunteer page":["What roles are available for volunteers right now?","How will I know if my volunteer application is approved?"],
   };
   
   // Function to get current page suggestions based on URL
@@ -39,28 +40,10 @@ export default function ChatButton({currentPage}) {
     return pageSuggestions[currentPage] || defaultSuggestions;
   };
 
-  // Update current page when component mounts and URL changes
-  // useEffect(() => {
-  //   // Get the pathname from window location
-  //   const updateCurrentPage = () => {
-  //     const path = window.location.pathname;
-  //     setCurrentPage(path);
-  //   };
-    
-  //   // Set initial page
-  //   updateCurrentPage();
-    
-  //   // Listen for URL changes (for SPAs)
-  //   window.addEventListener('popstate', updateCurrentPage);
-    
-  //   return () => {
-  //     window.removeEventListener('popstate', updateCurrentPage);
-  //   };
-  // }, []);
-  
   // Function to handle when a suggestion is clicked
   const handleSuggestionClick = async (suggestion) => {
-    // Hide suggestions when a suggestion is clicked
+    // Mark that user has interacted and hide suggestions permanently
+    setHasUserInteracted(true);
     setShowSuggestions(false);
     
     // Add the suggestion as a user message
@@ -75,14 +58,14 @@ export default function ChatButton({currentPage}) {
       console.log(botReply);
       setMessages(prev => [...prev, { text: botReply, sender: "bot" }]);
       
-      // Show suggestions again after bot responds
-      setShowSuggestions(true);
+      // Don't show suggestions again after user interaction
+      // Removed: setShowSuggestions(true);
     } catch (error) {
       console.error("Error sending suggestion:", error);
       setMessages(prev => [...prev, { text: "Sorry, I couldn't process your request.", sender: "bot" }]);
       
-      // Show suggestions even after error
-      setShowSuggestions(true);
+      // Don't show suggestions again after user interaction
+      // Removed: setShowSuggestions(true);
     } finally {
       setLoading(false);
     }
@@ -95,7 +78,8 @@ export default function ChatButton({currentPage}) {
   const handleSend = async () => {
     if (input.trim() === "") return;
 
-    // Hide suggestions when user sends their own message
+    // Mark that user has interacted and hide suggestions permanently
+    setHasUserInteracted(true);
     setShowSuggestions(false);
     
     const userMessage = { text: input, sender: "user" };
@@ -108,14 +92,14 @@ export default function ChatButton({currentPage}) {
       console.log(botReply);
       setMessages(prev => [...prev, { text: botReply, sender: "bot" }]);
       
-      // Show suggestions again after bot responds
-      setShowSuggestions(true);
+      // Don't show suggestions again after user interaction
+      // Removed: setShowSuggestions(true);
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages(prev => [...prev, { text: "Sorry, I couldn't process your request.", sender: "bot" }]);
       
-      // Show suggestions even after error
-      setShowSuggestions(true);
+      // Don't show suggestions again after user interaction
+      // Removed: setShowSuggestions(true);
     } finally {
       setLoading(false);
       setInput("");
@@ -170,7 +154,7 @@ export default function ChatButton({currentPage}) {
 
   // Render the suggestion buttons
   const renderSuggestions = () => {
-    if (!showSuggestions || loading) return null;
+    if (!showSuggestions || loading || hasUserInteracted) return null;
     
     return (
       <div className="w-full flex flex-col items-end space-y-2 mt-2 mb-4">
@@ -189,11 +173,11 @@ export default function ChatButton({currentPage}) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative z-[60]">
       {/* Side Chat Button - Hidden when chat is open */}
       <button 
         onClick={toggleChat}
-        className={`fixed right-0 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-sky-800 to-sky-400 text-sky-200 p-3 rounded-l-lg shadow-lg hover:bg-sky-950 transition-all z-50 ${isOpen ? 'opacity-0 translate-x-full pointer-events-none' : 'opacity-100 translate-x-0'}`}
+        className={`fixed right-0 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-sky-950 to-sky-600 text-sky-50 p-3 rounded-l-lg shadow-lg hover:bg-sky-950 transition-all z-50 ${isOpen ? 'opacity-0 translate-x-full pointer-events-none' : 'opacity-100 translate-x-0'}`}
         style={{ 
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
@@ -231,7 +215,7 @@ export default function ChatButton({currentPage}) {
                                         </div>
                                         <div className="flex flex-col">
                                              <span className="text-sm text-sky-200">Chat with</span>
-                                             <span className="font-bold text-sky-200">Connect NOC</span>
+                                             <span className="font-bold text-sky-200"> NOC Bot</span>
                                         </div>
                                </div>
                                <button 
@@ -281,15 +265,17 @@ export default function ChatButton({currentPage}) {
             
             {/* Loading indicator */}
             {loading && (
-              <div className="flex justify-start">
-                <span className="px-4 py-2 text-white rounded-lg bg-gray-500">
-                  Thinking...
-                </span>
+              <div className="flex items-center space-x-2 p-2">
+              <div className="flex space-x-2">
+                <div className="h-2 w-2 bg-sky-50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="h-2 w-2 bg-sky-50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="h-2 w-2 bg-sky-50 rounded-full animate-bounce" style={{ animationDelay: '600ms' }}></div>
               </div>
+            </div>
             )}
             
-            {/* Show suggestions as part of the chat flow - moved from fixed position */}
-            {isOpen && messages.length > 0 && !loading && showSuggestions && (
+            {/* Show suggestions only at the start of conversation */}
+            {isOpen && messages.length > 0 && !loading && !hasUserInteracted && showSuggestions && (
               <div className="flex justify-start w-full">
                 {renderSuggestions()}
               </div>

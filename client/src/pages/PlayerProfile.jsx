@@ -74,7 +74,10 @@ export default function AthleteProfile() {
   useEffect(() => {
     setIsLoading(true);
     api
-      .post("/users/details", { userId: "680ba380d55732d89287a2e9" })
+    .get("/users/logged/athlete", { withCredentials: true }).then((response) => {
+      
+    api
+      .post("/users/details", { userId: response.data._id })
       .then((response) => {
         setUser(response.data);
         setEditableUser(response.data);
@@ -85,6 +88,7 @@ export default function AthleteProfile() {
         setError("Failed to load user profile");
         setIsLoading(false);
       });
+    })
   }, []);
 
   const handleChange = (e) => {

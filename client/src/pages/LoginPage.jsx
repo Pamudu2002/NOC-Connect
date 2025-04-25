@@ -2,9 +2,11 @@ import { useState } from "react";
 import { api } from "../api/api";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
   // State for login credentials
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -45,7 +47,7 @@ export default function LoginForm() {
         console.log("Login successful:", response.data);
         setTimeout(() => {
           setLoading(false);
-          alert("Login successful!");
+          navigate("/player"); // Redirect to home page after successful login
           // setLoginData({ email: "", password: "" });
         }, 1000);
       })

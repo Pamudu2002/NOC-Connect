@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowUp, Menu, X, Phone, Mail, MapPin, FacebookIcon, TwitterIcon, InstagramIcon, ChevronDown, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-
+import ChatButton from '../components/Chat-bot';
 function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -137,6 +137,7 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-sky-950 text-white font-sans overflow-hidden">
       {/* Navbar */}
+      <ChatButton/>
       <header className={`fixed w-full z-50 transition-all duration-300 ${scrollPosition > 50 ? 'bg-sky-950 shadow-lg' : 'bg-transparent'}`}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           {/* Logo */}

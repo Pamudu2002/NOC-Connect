@@ -3,6 +3,7 @@ import { api } from "../api/api";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ChatButton from "../components/Chat-bot"; // Import your ChatButton component
 
 export default function LoginForm() {
   // State for login credentials
@@ -62,6 +63,7 @@ export default function LoginForm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-950 via-sky-900 to-sky-800 flex items-center justify-center p-4">
+       <ChatButton currentPage={"Login page"}/>
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 -left-20 w-64 h-64 bg-sky-600 opacity-10 rounded-full blur-3xl"></div>

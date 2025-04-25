@@ -18,6 +18,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { api } from "../api/api";
+import ChatButton from "../components/Chat-bot"; // Import your ChatButton component
 
 
 export default function AthleteProfile() {
@@ -252,6 +253,7 @@ export default function AthleteProfile() {
 
   return (
     <div className="min-h-screen bg-sky-950 text-sky-100 mt-16">
+       <ChatButton currentPage={"Player profile page"}/>
       {/* Header/Navigation */}
       <header className="pb-2 pt-10">
         <div className="container mx-auto px-4 flex justify-between items-center">

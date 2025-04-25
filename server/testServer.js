@@ -23,7 +23,7 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-app.use('/api/chat',chatRoute);
+
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

@@ -22,6 +22,9 @@ const achievementSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    certificateUrl: {
+      type: String
+    }
   },
   { timestamps: true }
 );

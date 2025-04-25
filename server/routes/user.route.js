@@ -150,16 +150,46 @@ router.post('/details', async (req, res) => {
 
 router.post('/update', async (req, res) => {
   try {
-    const { userId, user, profile } = req.body;
-    const updatedUser = await User.findByIdAndUpdate(userId, user, { new: true });
-    if (!updatedUser) {
+    const { user } = req.body;
+    const newUser = {
+      name: user.name,
+      email: user.email,
+    }
+    const achievements = user.achievements.map((achievement) => ({
+      ...achievement,
+      userId: user.userId,
+    }));
+
+    const newAthlete = {
+      title: user.title,
+      location: user.location,
+      sport: user.sport,
+      bio: user.bio,
+      dateOfBirth: user.dateOfBirth,
+      education: user.education, 
+      gender: user.gender,
+      birthPlace: user.birthPlace,
+      birthCountry: user.birthCountry,
+      height: user.height,
+      weight: user.weight,
+    };
+    
+    const response = await User.findByIdAndUpdate(user.userId, newUser, { new: true });
+    if (!response) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    if (profile) {
-      await athleteModel.findOneAndUpdate({ userId }, profile, { new: true });
+    const athleteResponse = await athleteModel.findOneAndUpdate({ userId: user.userId }, newAthlete, { new: true });
+    if (!athleteResponse) {
+      return res.status(404).json({ message: "Athlete profile not found" });
     }
-    return res.status(200).json({ message: "User updated successfully", user: updatedUser });
+    const achievementResponse = await achievementModel.deleteMany({ userId: user.userId });
+    if (!achievementResponse) {
+      return res.status(404).json({ message: "Achievements not found" });
+    }
+    await achievementModel.insertMany(achievements);
+    
+    return res.status(200).json({ message: "User updated successfully" });
+    
   } catch (error) {
     console.error("Error updating user:", error);
     return res.status(500).json({ message: "Internal server error" });

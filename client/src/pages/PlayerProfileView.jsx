@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { api } from '../api/api';
 import { useParams } from 'react-router-dom';
+import ChatButton from '../components/Chat-bot';
 
 function PlayerProfileView() {
   const { userId } = useParams();
@@ -129,7 +130,7 @@ function PlayerProfileView() {
 
   return (
     <div className="min-h-screen bg-sky-950 text-sky-100">
-      
+      <ChatButton currentPage={"Player profile view page"}/>
       {/* Header/Navigation */}
       <header className="bg-gradient-to-r from-sky-900 to-sky-950 py-4 shadow-lg border-b border-sky-800">
         <div className="container mx-auto px-4 flex justify-between items-center">

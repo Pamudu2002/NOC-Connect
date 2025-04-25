@@ -15,6 +15,7 @@ import {
   FaUserTie,
 } from "react-icons/fa";
 import { api } from "../api/api";
+import ChatButton from '../components/Chat-bot';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("pendingAthletes");
@@ -263,6 +264,7 @@ const AdminPage = () => {
   return (
     <div className="min-h-screen bg-sky-900 text-sky-50">
       {/* Header */}
+      <ChatButton currentPage={"Admin page"}/>
       <header className="bg-sky-800 p-4 shadow-md">
         <h1 className="text-2xl font-bold">Admin Dashboard</h1>
       </header>

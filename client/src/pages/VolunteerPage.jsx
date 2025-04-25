@@ -4,6 +4,7 @@ import VolunteerCard from '../components/VolunteerCard'
 import { api } from '../api/api' // Assuming you have an api.js file for API calls
 import { Search, Home } from 'lucide-react'
 import { Link } from 'react-router-dom' // Assuming you're using React Router
+import ChatButton from '../components/Chat-bot';
 
 function VolunteerPage() {
   const [events, setEvents] = useState([]);
@@ -37,6 +38,7 @@ function VolunteerPage() {
 
   return (
     <div className="min-h-screen bg-sky-950 text-sky-100">
+      <ChatButton currentPage={"Volunteer page"}/>
       {/* Header Section with Logo and Navigation */}
       <header className="bg-sky-900 py-6 shadow-md">
         <div className="container mx-auto px-4">

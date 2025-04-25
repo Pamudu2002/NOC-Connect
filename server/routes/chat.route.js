@@ -2,10 +2,19 @@ const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { SYSTEM_INSTRUCTION, ABOUT_APP } = require('./chatConfig');
-const eventModel = require('../models/event.model');
 
-const ABOUT_PLAYERS = JSON.stringify({ "name": "Jason", "age": "25" });
+const achievementModel = require('../models/achivement.model.js');
+const athleteModel = require('../models/athlete.model.js');
+const eventModel = require('../models/event.model.js');
+const sponsorModel = require('../models/sponsor.model.js');
+const userModel = require('../models/user.model.js');
+
+
+let ABOUT_ACHIEVEMENTS;
+let ABOUT_ATHLETES;
 let ABOUT_EVENTS;
+let ABOUT_SPONSORS;
+let ABOUT_USERS;
 
 // Set up model
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -21,15 +30,23 @@ async function initChatGemini(pageName) {
   if (chatID == CHAT_HISTORY_LIMIT) {
     chatID = 0;
   }
-  ABOUT_EVENTS  = await eventModel.find();
+  ABOUT_ACHIEVEMENTS = await achievementModel.find();
+  ABOUT_ATHLETES = await athleteModel.find();
+  ABOUT_EVENTS = await eventModel.find();
+  ABOUT_SPONSORS = await sponsorModel.find();
+  ABOUT_USERS = await userModel.find();
+
   historyStore[chatID] = [
     {
       role: "user",
       parts: [{
-        text:`About the web-app: ${ABOUT_APP}
-      About the players: ${ABOUT_PLAYERS}
-      About the Events: ${ABOUT_EVENTS}
-      Current page of the user: ${pageName}`}],
+        text:`About the app: ${ABOUT_APP}
+        About the achievements: ${ABOUT_ACHIEVEMENTS}
+        About the athletes: ${ABOUT_ATHLETES}
+        About the events: ${ABOUT_EVENTS}
+        About the sponsors: ${ABOUT_SPONSORS}
+        About the users: ${ABOUT_USERS}
+        Current page of the user: ${pageName}`}],
     },
     {
       role: "model",

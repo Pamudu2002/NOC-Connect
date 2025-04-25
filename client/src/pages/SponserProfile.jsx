@@ -18,6 +18,7 @@ import {
   Target
 } from "lucide-react";
 import { api } from "../api/api";
+import ChatButton from '../components/Chat-bot';
 
 export default function SponsorProfile() {
   // Initial state for sponsor data
@@ -187,6 +188,7 @@ export default function SponsorProfile() {
 
   return (
     <div className="min-h-screen bg-sky-950 text-sky-100 mt-16">
+      <ChatButton currentPage={"Sponsor profile"}/>
       {/* Header/Navigation */}
       <header className="pb-2 pt-10">
         <div className="container mx-auto px-4 flex justify-between items-center">

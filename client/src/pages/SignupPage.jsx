@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../api/api"; // Adjust the import based on your project structure
 import { useNavigate } from "react-router-dom";
+import ChatButton from '../components/Chat-bot';
 
 export default function SignupForm() {
   // States for form navigation
@@ -387,6 +388,7 @@ export default function SignupForm() {
       case 1:
         return (
           <div className="space-y-6">
+            <ChatButton currentPage={"signup page"}/>
             <h2 className="text-2xl font-bold text-sky-300 mb-6">
               Create Your Account
             </h2>
@@ -583,6 +585,7 @@ export default function SignupForm() {
         return role === "athlete" ? (
           // Athlete Profile Form
           <div className="space-y-6">
+            <ChatButton currentPage={"signup page"}/>
             <h2 className="text-2xl font-bold text-sky-300 mb-6">
               Athlete Profile
             </h2>

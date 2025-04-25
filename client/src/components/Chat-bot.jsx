@@ -1,18 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "../api/api";
 
-export default function ChatButton() {
+export default function ChatButton({currentPage}) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     { text: "How can I help?", sender: "bot" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [chatID, setChatID] = useState(null);
   const chatContainerRef = useRef(null);
   const chatModalRef = useRef(null);
   
   // State to store the current page URL
-  const [currentPage, setCurrentPage] = useState("");
+  // const [currentPage, setCurrentPage] = useState("");
   
   // State to track whether suggestions should be shown
   // Initial state is true so suggestions appear with the first bot message
@@ -21,7 +22,7 @@ export default function ChatButton() {
   // Object mapping page URLs to their specific suggestions
   // This can be expanded with more pages and suggestions as needed
   const pageSuggestions = {
-    "/": ["Want to learn how to sponsor an athlete? I can guide you!", "Looking to volunteer for upcoming events? Here's how to get started."],
+    "Home page": ["Want to learn how to sponsor an athlete? I can guide you!", "Looking to volunteer for upcoming events? Here's how to get started."],
     "/signup": ["Need help choosing the right account type? I can explain the options.", "Facing issues with the sign-up form? Let me walk you through it."],
     "/signin": ["Forgot your password? I can help you recover it.", "Having trouble logging in? Let's troubleshoot together."],
     "/volunteer": ["Want to know the benefits of volunteering with NOC Sri Lanka?", "Need help submitting your volunteer application?"],
@@ -33,29 +34,29 @@ export default function ChatButton() {
   const getCurrentPageSuggestions = () => {
     // Default suggestions if page is not found in our mapping
     const defaultSuggestions = ["Tell me more about Connect NOC", "How can I contact support?"];
-    
+    console.log(currentPage);
     // Return page-specific suggestions or default ones
     return pageSuggestions[currentPage] || defaultSuggestions;
   };
 
   // Update current page when component mounts and URL changes
-  useEffect(() => {
-    // Get the pathname from window location
-    const updateCurrentPage = () => {
-      const path = window.location.pathname;
-      setCurrentPage(path);
-    };
+  // useEffect(() => {
+  //   // Get the pathname from window location
+  //   const updateCurrentPage = () => {
+  //     const path = window.location.pathname;
+  //     setCurrentPage(path);
+  //   };
     
-    // Set initial page
-    updateCurrentPage();
+  //   // Set initial page
+  //   updateCurrentPage();
     
-    // Listen for URL changes (for SPAs)
-    window.addEventListener('popstate', updateCurrentPage);
+  //   // Listen for URL changes (for SPAs)
+  //   window.addEventListener('popstate', updateCurrentPage);
     
-    return () => {
-      window.removeEventListener('popstate', updateCurrentPage);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('popstate', updateCurrentPage);
+  //   };
+  // }, []);
   
   // Function to handle when a suggestion is clicked
   const handleSuggestionClick = async (suggestion) => {
@@ -69,7 +70,7 @@ export default function ChatButton() {
     
     try {
       // Send the suggestion to the API as if the user typed it
-      const botRes = await api.post("/chat", { userID: "12345", message: suggestion });
+      const botRes = await api.post("/chat", { chatID: chatID, message: suggestion });
       const botReply = botRes.data.response;
       console.log(botReply);
       setMessages(prev => [...prev, { text: botReply, sender: "bot" }]);
@@ -102,7 +103,7 @@ export default function ChatButton() {
     setLoading(true);
     
     try {
-      const botRes = await api.post("/chat", { userID: "12345", message: input });
+      const botRes = await api.post("/chat", { chatID: chatID, message: input });
       const botReply = botRes.data.response;
       console.log(botReply);
       setMessages(prev => [...prev, { text: botReply, sender: "bot" }]);
@@ -148,8 +149,9 @@ export default function ChatButton() {
   useEffect(() => {
     const initChat = async () => {
       try {
-        const res = await api.post("/chat/init", { userID: "12345" });
-        console.log("Chat initialized:", res.data);
+        const res = await api.post("/chat/init", { pageName: currentPage });
+        console.log(res.data.chatID)
+        setChatID(res.data.chatID);
       } catch (error) {
         console.error("Error initializing chat:", error);
       }

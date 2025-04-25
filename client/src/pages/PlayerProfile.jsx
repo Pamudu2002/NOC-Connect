@@ -18,7 +18,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { api } from "../api/api";
-import PopupTelegramChat from "../components/chat";
+
 
 export default function AthleteProfile() {
   // Initial state from the provided user data
@@ -965,10 +965,6 @@ export default function AthleteProfile() {
                 </div>
               )}
             </div>
-            <PopupTelegramChat
-              currentUserId="current-user"
-              onClose={() => setShowChat(false)}
-            />
           </div>
         </div>
       </main>

@@ -104,6 +104,42 @@ const AdminPage = () => {
     },
   ]);
 
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      try {
+        const response = await api.get("/users/all");
+        const users = response.data;
+  
+        const mappedUsers = users.map(user => ({
+          id: user._id,
+          fullName: user.name,
+          phoneNumber: user.phoneNumber,
+          email: user.email,
+          sport: user.sport,
+          status: user.isAccepted ? "accepted" : "pending", // accepted / pending / rejected
+          role: user.role
+        }));
+  
+        setPendingAthletes(
+          mappedUsers.filter((user) => user.role === "athlete" && user.status === "pending")
+        );
+        setPendingSponsors(
+          mappedUsers.filter((user) => user.role === "sponsor" && user.status === "pending")
+        );
+        setAthletes(
+          mappedUsers.filter((user) => user.role === "athlete" && user.status === "accepted")
+        );
+        setSponsors(
+          mappedUsers.filter((user) => user.role === "sponsor" && user.status === "accepted")
+        );
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+  
+    fetchAllUsers();
+  }, []);  
+
   // Filter functions
   const filteredPendingAthletes = pendingAthletes.filter((athlete) => {
     const matchesSearch =

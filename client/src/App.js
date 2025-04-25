@@ -5,7 +5,6 @@ import Loader from "./components/Loader";
 
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import AthletesList from "./pages/SponsorDashboard";
 import PlayerProfile from "./pages/PlayerProfile";
 import PlayerProfileView from "./pages/PlayerProfileView";
@@ -33,16 +32,17 @@ function App() {
             <div className="App bg-white">
               {!loading && <Navbar />} {/* Hide Navbar while loading */}
               <Routes>
-                
-           
                 <Route
                   path="/athletes"
-                  element={<AthletesList setLoading={setLoading} loading={loading} />}
+                  element={
+                    <AthletesList setLoading={setLoading} loading={loading} />
+                  }
                 />
                 <Route path="/player" element={<PlayerProfile />} />
-                <Route path="/playerView/:userId" element={<PlayerProfileView />} />
-                
-              
+                <Route
+                  path="/playerView/:userId"
+                  element={<PlayerProfileView />}
+                />
               </Routes>
             </div>
           }

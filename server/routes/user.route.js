@@ -10,7 +10,6 @@ const achievementModel = require("../models/achivement.model");
 
 router.post("/register", async (req, res) => {
   const { user, profile, achievements } = req.body;
-
   try {
     // Check if user with the same email exists
     const existingUser = await User.findOne({ email: user.email });
@@ -125,7 +124,7 @@ router.post('/details', async (req, res) => {
           description: achievement.description,
           date: achievement.date,
           icon: achievement.icon,
-          image: achievement.image
+          image: achievement.certificateUrl
         }))
       };
       return res.status(200).json(details);

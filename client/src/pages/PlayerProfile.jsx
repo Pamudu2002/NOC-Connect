@@ -74,7 +74,7 @@ export default function AthleteProfile() {
   useEffect(() => {
     setIsLoading(true);
     api
-      .post("/users/details", { userId: "6808c85432f31f1dd9d04562" })
+      .post("/users/details", { userId: "680ba380d55732d89287a2e9" })
       .then((response) => {
         setUser(response.data);
         setEditableUser(response.data);

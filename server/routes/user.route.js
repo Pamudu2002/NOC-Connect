@@ -124,7 +124,7 @@ router.post('/details', async (req, res) => {
           description: achievement.description,
           date: achievement.date,
           icon: achievement.icon,
-          image: achievement.image
+          image: achievement.certificateUrl
         }))
       };
       return res.status(200).json(details);

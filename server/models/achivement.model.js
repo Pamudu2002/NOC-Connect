@@ -22,14 +22,6 @@ const achievementSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    icon:{
-      type: String,
-      required: true,
-    },
-    image: {
-      type: String,
-      required: true,
-    },
   },
   { timestamps: true }
 );

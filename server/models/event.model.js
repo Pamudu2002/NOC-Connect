@@ -33,7 +33,12 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  volunteerIDs: []
+  volunteerIDs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'volunteers'
+    }
+  ]
 }, { timestamps: true });
 
 const eventModel = mongoose.model('events', eventSchema);

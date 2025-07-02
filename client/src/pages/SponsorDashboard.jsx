@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AthleteCard from "../components/AthleteCard";
 import { api } from "../api/api";
+import ChatButton from '../components/Chat-bot';
 
 const AthletesList = () => {
   const [nameSearchTerm, setNameSearchTerm] = useState("");
@@ -57,6 +58,7 @@ const AthletesList = () => {
 
   return (
     <div className="mx-auto p-4 bg-sky-950 mt-14">
+      <ChatButton currentPage={"Sponsor dashboard page"}/>
       <div className="top-0 z-10 bg-sky-900 shadow-lg pt-4 pb-4 px-4 rounded-b-lg">
         <h1 className="text-3xl font-bold text-sky-50 mb-6">
           Athletes Directory

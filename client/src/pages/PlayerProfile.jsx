@@ -18,7 +18,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { api } from "../api/api";
-import PopupTelegramChat from "../components/chat";
+import ChatButton from "../components/Chat-bot"; // Import your ChatButton component
+
 
 export default function AthleteProfile() {
   // Initial state from the provided user data
@@ -74,7 +75,10 @@ export default function AthleteProfile() {
   useEffect(() => {
     setIsLoading(true);
     api
-      .post("/users/details", { userId: "680ba380d55732d89287a2e9" })
+    .get("/users/logged", { withCredentials: true }).then((response) => {
+      
+    api
+      .post("/users/details", { userId: response.data._id })
       .then((response) => {
         setUser(response.data);
         setEditableUser(response.data);
@@ -85,6 +89,7 @@ export default function AthleteProfile() {
         setError("Failed to load user profile");
         setIsLoading(false);
       });
+    })
   }, []);
 
   const handleChange = (e) => {
@@ -248,6 +253,7 @@ export default function AthleteProfile() {
 
   return (
     <div className="min-h-screen bg-sky-950 text-sky-100 mt-16">
+       <ChatButton currentPage={"Player profile page"}/>
       {/* Header/Navigation */}
       <header className="pb-2 pt-10">
         <div className="container mx-auto px-4 flex justify-between items-center">
@@ -961,10 +967,6 @@ export default function AthleteProfile() {
                 </div>
               )}
             </div>
-            <PopupTelegramChat
-              currentUserId="current-user"
-              onClose={() => setShowChat(false)}
-            />
           </div>
         </div>
       </main>

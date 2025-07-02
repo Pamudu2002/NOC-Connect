@@ -21,7 +21,9 @@ export default function ChatButton({currentPage}) {
   
   // Object mapping page URLs to their specific suggestions
   const pageSuggestions = {
-    "Home page": ["Want to learn how to sponsor an athlete? ", "Looking to volunteer for upcoming events? "],
+
+    "Home page": ["How to sponsor an athlete ?", "How to volunteer for upcoming events? "],
+
     "Login page": ["I can't log in to my account, what should I do?", "Can I switch between sponsor and player accounts?"],
     "Admin page": ["How do I approve a new player registration?", "Where can I manage sponsor requests?"],
     "Player profile page": ["How can I update my sport or achievements?", "Where do I upload my latest competition photos?"],

@@ -137,7 +137,9 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-sky-950 text-white font-sans overflow-hidden">
       {/* Navbar */}
-      <ChatButton/>
+
+      <ChatButton currentPage={"Home page"}/>
+
       <header className={`fixed w-full z-50 transition-all duration-300 ${scrollPosition > 50 ? 'bg-sky-950 shadow-lg' : 'bg-transparent'}`}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           {/* Logo */}

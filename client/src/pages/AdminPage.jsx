@@ -15,6 +15,7 @@ import {
   FaUserTie,
 } from "react-icons/fa";
 import { api } from "../api/api";
+import ChatButton from '../components/Chat-bot';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("pendingAthletes");
@@ -103,6 +104,42 @@ const AdminPage = () => {
       eventName: "",
     },
   ]);
+
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      try {
+        const response = await api.get("/users/all");
+        const users = response.data;
+  
+        const mappedUsers = users.map(user => ({
+          id: user._id,
+          fullName: user.name,
+          phoneNumber: user.phoneNumber,
+          email: user.email,
+          sport: user.sport,
+          status: user.isAccepted ? "accepted" : "pending", // accepted / pending / rejected
+          role: user.role
+        }));
+  
+        setPendingAthletes(
+          mappedUsers.filter((user) => user.role === "athlete" && user.status === "pending")
+        );
+        setPendingSponsors(
+          mappedUsers.filter((user) => user.role === "sponsor" && user.status === "pending")
+        );
+        setAthletes(
+          mappedUsers.filter((user) => user.role === "athlete" && user.status === "accepted")
+        );
+        setSponsors(
+          mappedUsers.filter((user) => user.role === "sponsor" && user.status === "accepted")
+        );
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+  
+    fetchAllUsers();
+  }, []);  
 
   // Filter functions
   const filteredPendingAthletes = pendingAthletes.filter((athlete) => {
@@ -227,6 +264,7 @@ const AdminPage = () => {
   return (
     <div className="min-h-screen bg-sky-900 text-sky-50">
       {/* Header */}
+      <ChatButton currentPage={"Admin page"}/>
       <header className="bg-sky-800 p-4 shadow-md">
         <h1 className="text-2xl font-bold">Admin Dashboard</h1>
       </header>

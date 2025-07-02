@@ -11,6 +11,7 @@ import PlayerProfileView from "./pages/PlayerProfileView";
 import SignupForm from "./pages/SignupPage";
 import LoginForm from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
+import SponsorProfile from "./pages/SponserProfile";
 function App() {
   const [loading, setLoading] = useState(false); // State to manage loading overlay
   return (
@@ -43,6 +44,7 @@ function App() {
                   path="/playerView/:userId"
                   element={<PlayerProfileView />}
                 />
+                <Route path="/sponsor" element={<SponsorProfile />} />
               </Routes>
             </div>
           }
